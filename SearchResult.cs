@@ -1,6 +1,6 @@
 using EveryThingSharpCore.Fluent;
 
-namespace ReplaceAllGit;
+namespace CoffeeScholar.ReplaceAllGit;
 
 public class SearchResult(EverythingEntry entry)
 {

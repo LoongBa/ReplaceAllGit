@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 
 
-namespace BlueMystic
+namespace CoffeeScholar.ReplaceAllGit
 {
 	/// <summary>This tries to automatically apply Windows Dark Mode (if enabled) to a Form.
 	/// <para>Author: BlueMystic (bluemystic.play@gmail.com)  2024</para></summary>

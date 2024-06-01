@@ -1,9 +1,8 @@
-﻿using DarkModeForms;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Globalization;
-using static BlueMystic.KeyValue;
+using static CoffeeScholar.ReplaceAllGit.KeyValue;
 
-namespace BlueMystic
+namespace CoffeeScholar.ReplaceAllGit
 {
 	/* Author: BlueMystic (bluemystic.play@gmail.com)  2024 */
 	public static class Messenger

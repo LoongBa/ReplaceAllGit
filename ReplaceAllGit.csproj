@@ -6,6 +6,11 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>CoffeeScholar.ReplaceAllGit</RootNamespace>
+    <PlatformTarget>x64</PlatformTarget>
+    <Authors>CoffeeScholar</Authors>
+    <PackageProjectUrl>https://github.com/coffeescholar/ReplaceAllGit</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/coffeescholar/ReplaceAllGit</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>

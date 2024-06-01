@@ -1,4 +1,4 @@
-﻿namespace ReplaceAllGit
+﻿namespace CoffeeScholar.ReplaceAllGit
 {
     partial class MainForm
     {
@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            ListViewItem listViewItem1 = new ListViewItem("This is some text. This part is red.");
             btnUpdate = new Button();
             groupBox2 = new GroupBox();
             button1 = new Button();
@@ -41,7 +42,7 @@
             btnRefresh = new Button();
             chkSelectAll = new CheckBox();
             lblDescription = new Label();
-            lsvResult = new ListView();
+            lsvResult = new MyListView();
             columnHeader1 = new ColumnHeader();
             columnHeader5 = new ColumnHeader();
             columnHeader6 = new ColumnHeader();
@@ -207,9 +208,12 @@
             lsvResult.CheckBoxes = true;
             lsvResult.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader5, columnHeader6, columnHeader3, columnHeader4, columnHeader7, columnHeader2 });
             lsvResult.FullRowSelect = true;
+            listViewItem1.StateImageIndex = 0;
+            lsvResult.Items.AddRange(new ListViewItem[] { listViewItem1 });
             lsvResult.Location = new Point(22, 200);
             lsvResult.MultiSelect = false;
             lsvResult.Name = "lsvResult";
+            lsvResult.OwnerDraw = true;
             lsvResult.Size = new Size(1325, 621);
             lsvResult.TabIndex = 4;
             lsvResult.UseCompatibleStateImageBehavior = false;
@@ -279,7 +283,7 @@
         private Button btnUpdate;
         private GroupBox groupBox2;
         private Label lblDescription;
-        private ListView lsvResult;
+        private MyListView lsvResult;
         private ColumnHeader columnHeader1;
         private ColumnHeader columnHeader3;
         private ColumnHeader columnHeader6;

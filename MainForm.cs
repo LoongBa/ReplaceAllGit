@@ -1,9 +1,8 @@
-using BlueMystic;
-using Microsoft.Win32;
 using System.Collections;
 using System.Diagnostics;
+using Microsoft.Win32;
 
-namespace ReplaceAllGit;
+namespace CoffeeScholar.ReplaceAllGit;
 
 public partial class MainForm : Form
 {
@@ -31,6 +30,45 @@ public partial class MainForm : Form
 
         // 可能需要刷新应用程序的设置
     }
+
+    private void RefreshListView(IEnumerable<SearchResult> results)
+    {
+        var index = 0;
+        // 列出结果
+        foreach (var result in results.OrderByDescending(r => r.Version))
+        {
+            index++;
+            var inPath = result.IsInSysPath ? "系统" : string.Empty;
+            if (inPath.Length > 0) inPath += " | ";
+            inPath += result.IsInUserPath ? "用户" : string.Empty;
+
+            ListViewItem item = new(index.ToString("D2"));
+            item.SubItems.Add(result.Version);
+            item.SubItems.Add(result.IsNeedUpdating ? "需升级" : "已最新");
+            item.SubItems.Add(inPath);
+            item.SubItems.Add(SearchHelper.ComposeDisplayFileSize(result.Size));
+            item.SubItems.Add(result.LastWriteTime?.ToString("yyyy-MM-dd HH:mm:ss"));
+            item.SubItems.Add(result.FullPath);
+            lsvResult.Items.Add(item);
+        }
+    }
+
+    private int _SortColumn = -1;
+
+    private void ClearControls()
+    {
+        lsvResult.Items.Clear();
+        lblNumber.Text = string.Empty;
+        lblVersion.Text = string.Empty;
+        linkPath.Text = string.Empty;
+    }
+
+    private void MainForm_Load(object sender, EventArgs e)
+    {
+        Text = $@"Replace All Git - 查找 Git 并升级到最新版本 - {Application.ProductVersion}";
+        ClearControls();
+    }
+
     private void btnRefresh_Click(object sender, EventArgs e)
     {
         ClearControls();
@@ -59,29 +97,6 @@ public partial class MainForm : Form
         btnRefresh.Enabled = true;
     }
 
-    private void RefreshListView(IEnumerable<SearchResult> results)
-    {
-        var index = 0;
-        // 列出结果
-        foreach (var result in results.OrderByDescending(r => r.Version))
-        {
-            index++;
-            var inPath = result.IsInSysPath ? "系统" : string.Empty;
-            if (inPath.Length > 0) inPath += " | ";
-            inPath += result.IsInUserPath ? "用户" : string.Empty;
-
-            ListViewItem item = new(index.ToString("D2"));
-            item.SubItems.Add(result.Version);
-            item.SubItems.Add(result.IsNeedUpdating ? "需升级" : "已最新");
-            item.SubItems.Add(inPath);
-            item.SubItems.Add(SearchHelper.ComposeDisplayFileSize(result.Size));
-            item.SubItems.Add(result.LastWriteTime?.ToString("yyyy-MM-dd HH:mm:ss"));
-            item.SubItems.Add(result.FullPath);
-            lsvResult.Items.Add(item);
-        }
-    }
-
-    private int _SortColumn = -1;
     private void lsvResult_ColumnClick(object sender, ColumnClickEventArgs e)
     {
         if (e.Column != _SortColumn)
@@ -119,19 +134,6 @@ public partial class MainForm : Form
         var folder = Path.GetDirectoryName(path);
         if (folder != null)
             Process.Start("explorer.exe", folder);
-    }
-
-    private void MainForm_Load(object sender, EventArgs e)
-    {
-        ClearControls();
-    }
-
-    private void ClearControls()
-    {
-        lsvResult.Items.Clear();
-        lblNumber.Text = string.Empty;
-        lblVersion.Text = string.Empty;
-        linkPath.Text = string.Empty;
     }
 
     private void chkSelectAll_CheckedChanged(object sender, EventArgs e)

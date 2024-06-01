@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace BlueMystic
+namespace CoffeeScholar.ReplaceAllGit
 {
 	public class FlatTabControl : TabControl
 	{

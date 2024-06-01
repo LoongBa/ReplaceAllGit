@@ -1,4 +1,4 @@
-namespace ReplaceAllGit
+namespace CoffeeScholar.ReplaceAllGit
 {
     internal static class Program
     {
