@@ -84,9 +84,9 @@ However, a very troublesome issue has arisen - there are multiple `git.exe` in t
 
 > Of course, you can also ignore them and not upgrade them.
 
-# 提供一个查找和批量升级 Git 的小工具
+# 一个查找和批量升级 Git 的小工具
 
-# Providing a small tool for finding and batch upgrading Git
+# A small tool for finding and batch upgrading Git
 
 周末，带小朋友写了这个小工具，其中一些稍微复杂的部分是我帮助写的，也采用了两个开源项目的代码（MIT 协议），非常感谢！
 
@@ -100,11 +100,7 @@ Over the weekend, I wrote this small tool with my kid. I helped with some of the
   
   —— Apply Dark Mode to all Controls in a Form [WinForms]
 
-# Here's a small tool for finding and batch upgrading Git.
-
-Over the weekend, I wrote this small tool with my kid. I helped with some of the slightly more complex parts, and we also used code from two open-source projects (under the MIT license). A quick thanks first!
-
-I'll provide the original information once I've organized the documentation.
+# 
 
 ![](./images_README/2024-06-01-23-36-39-image.png)
 
@@ -116,7 +112,7 @@ I'll provide the original information once I've organized the documentation.
     
     或 or
   
-  +  [下载 .NET 8.0 (Linux、macOS 和 Windows)](https://dotnet.microsoft.com/zh-cn/download/dotnet/8.0)、[Download .NET 8.0 (Linux, macOS, and Windows)](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+  + [下载 .NET 8.0 (Linux、macOS 和 Windows)](https://dotnet.microsoft.com/zh-cn/download/dotnet/8.0)、[Download .NET 8.0 (Linux, macOS, and Windows)](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
 + Everything 安装并运行
   
