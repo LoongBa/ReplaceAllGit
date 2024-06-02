@@ -4,11 +4,11 @@
 
 Machine translation is used, please understand.
 
-# 起因：Git 远程代码执行漏洞
+# 起因：Git 远程代码执行漏洞 CVE-2024-32002
 
-# May 2024 CVE Security Bulletin
+# May 2024 CVE Security Bulletin: CVE-2024-32002
 
-# Git: Remote code execution vulnerability CVE-2024-32002
+# Git: Remote code execution vulnerability
 
 2024年5月 CVE 安全通告：**Git 远程代码执行漏洞 (CVE-2024-32002)**
 
@@ -52,9 +52,9 @@ Machine translation is used, please understand.
 
 # ——抓紧升级修复漏洞
 
-** Git 2.45.1 版本修复了相关漏洞，抓紧升级即可。**
+**Git 2.45.1 版本修复了相关漏洞，抓紧升级即可。**
 
-** The related vulnerability has been fixed in Git version 2.45.1, please upgrade promptly.**
+**The related vulnerability has been fixed in Git version 2.45.1, please upgrade promptly.**
 
 然而，非常麻烦的事情来了——系统中有多个 `git.exe`：
 
@@ -82,9 +82,19 @@ However, a very troublesome issue has arisen - there are multiple `git.exe` in t
 
 # 提供一个查找和批量升级 Git 的小工具
 
-周末，带小朋友写了这个小工具，其中一些稍微复杂的部分是我帮助写的，也采用了两个开源项目的代码（MIT 协议），先简单谢过！
+# Providing a small tool for finding and batch upgrading Git
 
-等我整理好文档一并提供原始信息。
+周末，带小朋友写了这个小工具，其中一些稍微复杂的部分是我帮助写的，也采用了两个开源项目的代码（MIT 协议），非常感谢！
+
+Over the weekend, I wrote this small tool with my kid. I helped with some of the slightly more complex parts, and we also used code from two open-source projects (under the MIT license). Many thanks!
+
++ **EverythingSharp**: [GitHub - Riboe/EverythingSharp: A simple C# wrapper around the Everything SDK from Voidtools.](https://github.com/Riboe/EverythingSharp)
+  
+  —— A simple C# wrapper around the [Everything SDK](https://www.voidtools.com/support/everything/sdk/) from Voidtools.
+
++ **Dark-Mode-Forms**: [GitHub - BlueMystical/Dark-Mode-Forms: Apply Dark Mode to all Controls in a Form [WinForms]](https://github.com/BlueMystical/Dark-Mode-Forms)
+  
+  —— Apply Dark Mode to all Controls in a Form [WinForms]
 
 # Here's a small tool for finding and batch upgrading Git.
 
@@ -103,7 +113,6 @@ I'll provide the original information once I've organized the documentation.
   * [x] 提供深色模式风格，跟随系统设置、用户自行选择
   
   * [ ] 没有安装 Everything 时，采用文件搜索的方式
-  
   - [ ] 加入多语言支持，英语
 - [ ] V2.0 提供复制功能
   
@@ -163,5 +172,3 @@ This is a learning and practice project, but the base class can be used to solve
 - Find python.exe in the system, and determine the version, upgrade, merge (soft link)
 
 - Find various AI models in the system, and determine the version, upgrade, merge (soft link) - for example, SDWebUI, ComfyUI, Fooocus, SD Forge, etc., OLlama, LMStudio models, etc.
-
-
