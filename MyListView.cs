@@ -5,12 +5,18 @@ public class MyListView : ListView
     public MyListView()
     {
         // 开启 OwnerDraw，这样我们可以自己绘制项
-        OwnerDraw = true;
+        //OwnerDraw = true;
 
         // 添加一个项
-        Items.Add("This is some text. This part is red.");
+        //Items.Add("This is some text. This part is red.");
 
-        DrawItem += OnDrawItem;
+        // DrawItem += OnDrawItem;
+
+        SizeChanged += (_, _) =>
+        {
+            if (Columns.Count >= 1) 
+                Columns[^1].Width = -2;
+        };
     }
 
     private void OnDrawItem(object sender, DrawListViewItemEventArgs e)
@@ -23,7 +29,7 @@ public class MyListView : ListView
         AnsiStringHelper.DrawString(e.Graphics, text, Font, e.Bounds);
 
         // 使用默认的字体和红色绘制文字的后半部分
-        //var size = e.Graphics.MeasureString(text, Font);
-        //e.Graphics.DrawString(text.Substring(startIndex), Font, Brushes.Red, e.Bounds.Left + size.Width, e.Bounds.Top);
+        // var size = e.Graphics.MeasureString(text, Font);
+        // e.Graphics.DrawString(text.Substring(startIndex), Font, Brushes.Red, e.Bounds.Left + size.Width, e.Bounds.Top);
     }
 }

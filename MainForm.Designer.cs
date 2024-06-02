@@ -28,10 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            ListViewItem listViewItem3 = new ListViewItem("This is some text. This part is red.");
-            ListViewItem listViewItem4 = new ListViewItem("This is some text. This part is red.");
             btnUpdate = new Button();
             groupBox2 = new GroupBox();
+            linkLabel1 = new LinkLabel();
             button1 = new Button();
             groupBox1 = new GroupBox();
             lblNumber = new Label();
@@ -51,7 +50,6 @@
             columnHeader4 = new ColumnHeader();
             columnHeader7 = new ColumnHeader();
             columnHeader2 = new ColumnHeader();
-            linkLabel1 = new LinkLabel();
             groupBox2.SuspendLayout();
             groupBox1.SuspendLayout();
             SuspendLayout();
@@ -84,6 +82,18 @@
             groupBox2.Size = new Size(1371, 883);
             groupBox2.TabIndex = 1;
             groupBox2.TabStop = false;
+            // 
+            // linkLabel1
+            // 
+            linkLabel1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            linkLabel1.AutoSize = true;
+            linkLabel1.Location = new Point(1199, 26);
+            linkLabel1.Name = "linkLabel1";
+            linkLabel1.Size = new Size(148, 24);
+            linkLabel1.TabIndex = 11;
+            linkLabel1.TabStop = true;
+            linkLabel1.Text = "Git for Windows";
+            linkLabel1.LinkClicked += linkLabel1_LinkClicked;
             // 
             // button1
             // 
@@ -120,6 +130,7 @@
             // 
             // btnSetAsDefault
             // 
+            btnSetAsDefault.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnSetAsDefault.Location = new Point(1203, 21);
             btnSetAsDefault.Name = "btnSetAsDefault";
             btnSetAsDefault.Size = new Size(100, 33);
@@ -153,7 +164,7 @@
             chkCombineSameFolder.AutoSize = true;
             chkCombineSameFolder.Checked = true;
             chkCombineSameFolder.CheckState = CheckState.Checked;
-            chkCombineSameFolder.Location = new Point(741, 840);
+            chkCombineSameFolder.Location = new Point(302, 840);
             chkCombineSameFolder.Name = "chkCombineSameFolder";
             chkCombineSameFolder.Size = new Size(144, 28);
             chkCombineSameFolder.TabIndex = 7;
@@ -166,7 +177,7 @@
             chkIgnoreSmaller.AutoSize = true;
             chkIgnoreSmaller.Checked = true;
             chkIgnoreSmaller.CheckState = CheckState.Checked;
-            chkIgnoreSmaller.Location = new Point(555, 840);
+            chkIgnoreSmaller.Location = new Point(116, 840);
             chkIgnoreSmaller.Name = "chkIgnoreSmaller";
             chkIgnoreSmaller.Size = new Size(162, 28);
             chkIgnoreSmaller.TabIndex = 6;
@@ -180,7 +191,7 @@
             btnRefresh.Name = "btnRefresh";
             btnRefresh.Size = new Size(112, 34);
             btnRefresh.TabIndex = 8;
-            btnRefresh.Text = "&R 刷新";
+            btnRefresh.Text = "&S 搜索全盘";
             btnRefresh.UseVisualStyleBackColor = true;
             btnRefresh.Click += btnRefresh_Click;
             // 
@@ -211,9 +222,6 @@
             lsvResult.CheckBoxes = true;
             lsvResult.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader5, columnHeader6, columnHeader3, columnHeader4, columnHeader7, columnHeader2 });
             lsvResult.FullRowSelect = true;
-            listViewItem3.StateImageIndex = 0;
-            listViewItem4.StateImageIndex = 0;
-            lsvResult.Items.AddRange(new ListViewItem[] { listViewItem3, listViewItem4 });
             lsvResult.Location = new Point(22, 200);
             lsvResult.MultiSelect = false;
             lsvResult.Name = "lsvResult";
@@ -263,18 +271,7 @@
             // columnHeader2
             // 
             columnHeader2.Text = "完整路径";
-            columnHeader2.Width = 700;
-            // 
-            // linkLabel1
-            // 
-            linkLabel1.AutoSize = true;
-            linkLabel1.Location = new Point(1199, 26);
-            linkLabel1.Name = "linkLabel1";
-            linkLabel1.Size = new Size(148, 24);
-            linkLabel1.TabIndex = 11;
-            linkLabel1.TabStop = true;
-            linkLabel1.Text = "Git for Windows";
-            linkLabel1.LinkClicked += linkLabel1_LinkClicked;
+            columnHeader2.Width = 521;
             // 
             // MainForm
             // 
@@ -282,6 +279,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1395, 914);
             Controls.Add(groupBox2);
+            MinimumSize = new Size(1000, 800);
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "查找 Git 并升级到最新版本";

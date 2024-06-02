@@ -1,16 +1,17 @@
 using System.Collections;
 using System.Diagnostics;
+using CoffeeScholar.ReplaceAllGit.DarkMode;
 using Microsoft.Win32;
 
 namespace CoffeeScholar.ReplaceAllGit;
 
 public partial class MainForm : Form
 {
-    private DarkModeCS? _Dm = null;
+    private readonly DarkModeCS? _DarkMode;
     public MainForm()
     {
         InitializeComponent();
-        _Dm = new DarkModeCS(this);
+        _DarkMode = new DarkModeCS(this);
         // 订阅系统首选项更改事件
         SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
     }
@@ -29,6 +30,8 @@ public partial class MainForm : Form
         }
 
         // 可能需要刷新应用程序的设置
+        //_DarkMode?.TryDarkModeTheme();
+
     }
 
     private void RefreshListView(IEnumerable<SearchResult> results)
@@ -148,8 +151,12 @@ public partial class MainForm : Form
     {
         linkLabel1.LinkVisited = false;
 
-        // Open the link in a browser.
-        Process.Start("https://gitforwindows.org/");
+        var psi = new ProcessStartInfo
+        {
+            FileName = "https://gitforwindows.org/",
+            UseShellExecute = true
+        };
+        Process.Start(psi);
     }
 }
 
