@@ -1,8 +1,12 @@
 # ReplaceAllGit 简要说明 Brief Explanation
 
-采用机器翻译，敬请谅解。
+> 采用机器翻译，敬请谅解。
+> 
+> Machine translation is used, please understand.
 
-Machine translation is used, please understand.
+Git 安全漏洞问题需升级所有 Git.exe。此工具用于查找本地硬盘上所有的 Git 并获取版本信息，批量更新（复制、创建软链接）。
+
+This tool is used to find all Git on the local hard disk and obtain version information, and then update in batches (copy, create soft links).
 
 # 起因：Git 远程代码执行漏洞 CVE-2024-32002
 
@@ -104,7 +108,21 @@ I'll provide the original information once I've organized the documentation.
 
 ![](./images_README/2024-06-01-23-36-39-image.png)
 
-# 版本计划
+# 运行环境 Running Environment
+
++ .NET 8 运行环境 Runtime
+  
+  + .NET Desktop Runtime 8.0.6 [下载 .NET 8.0 Desktop Runtime (v8.0.6) - Windows x64 Installer](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-desktop-8.0.6-windows-x64-installer)
+    
+    或 or
+  
+  +  [下载 .NET 8.0 (Linux、macOS 和 Windows)](https://dotnet.microsoft.com/zh-cn/download/dotnet/8.0)、[Download .NET 8.0 (Linux, macOS, and Windows)](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+
++ Everything 安装并运行
+  
+  + https://www.voidtools.com/
+
+# 版本计划 Version Plan
 
 * [ ] V1.0 仅提供查找功能，基于 Everything
   
