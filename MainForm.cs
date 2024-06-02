@@ -25,7 +25,7 @@ public partial class MainForm : Form
             case UserPreferenceCategory.Desktop:
                 // 用户更改了桌面相关的首选项设置
                 break;
-            // 处理其他类别...
+                // 处理其他类别...
         }
 
         // 可能需要刷新应用程序的设置
@@ -134,6 +134,7 @@ public partial class MainForm : Form
         var folder = Path.GetDirectoryName(path);
         if (folder != null)
             Process.Start("explorer.exe", folder);
+        linkPath.LinkVisited = false;
     }
 
     private void chkSelectAll_CheckedChanged(object sender, EventArgs e)
@@ -141,6 +142,14 @@ public partial class MainForm : Form
         // 全选，或全不选
         foreach (ListViewItem item in lsvResult.Items)
             item.Checked = chkSelectAll.Checked;
+    }
+
+    private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+    {
+        linkLabel1.LinkVisited = false;
+
+        // Open the link in a browser.
+        Process.Start("https://gitforwindows.org/");
     }
 }
 

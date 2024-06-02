@@ -28,7 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            ListViewItem listViewItem1 = new ListViewItem("This is some text. This part is red.");
+            ListViewItem listViewItem3 = new ListViewItem("This is some text. This part is red.");
+            ListViewItem listViewItem4 = new ListViewItem("This is some text. This part is red.");
             btnUpdate = new Button();
             groupBox2 = new GroupBox();
             button1 = new Button();
@@ -50,6 +51,7 @@
             columnHeader4 = new ColumnHeader();
             columnHeader7 = new ColumnHeader();
             columnHeader2 = new ColumnHeader();
+            linkLabel1 = new LinkLabel();
             groupBox2.SuspendLayout();
             groupBox1.SuspendLayout();
             SuspendLayout();
@@ -67,6 +69,7 @@
             // groupBox2
             // 
             groupBox2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox2.Controls.Add(linkLabel1);
             groupBox2.Controls.Add(button1);
             groupBox2.Controls.Add(groupBox1);
             groupBox2.Controls.Add(chkCombineSameFolder);
@@ -208,8 +211,9 @@
             lsvResult.CheckBoxes = true;
             lsvResult.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader5, columnHeader6, columnHeader3, columnHeader4, columnHeader7, columnHeader2 });
             lsvResult.FullRowSelect = true;
-            listViewItem1.StateImageIndex = 0;
-            lsvResult.Items.AddRange(new ListViewItem[] { listViewItem1 });
+            listViewItem3.StateImageIndex = 0;
+            listViewItem4.StateImageIndex = 0;
+            lsvResult.Items.AddRange(new ListViewItem[] { listViewItem3, listViewItem4 });
             lsvResult.Location = new Point(22, 200);
             lsvResult.MultiSelect = false;
             lsvResult.Name = "lsvResult";
@@ -261,6 +265,17 @@
             columnHeader2.Text = "完整路径";
             columnHeader2.Width = 700;
             // 
+            // linkLabel1
+            // 
+            linkLabel1.AutoSize = true;
+            linkLabel1.Location = new Point(1199, 26);
+            linkLabel1.Name = "linkLabel1";
+            linkLabel1.Size = new Size(148, 24);
+            linkLabel1.TabIndex = 11;
+            linkLabel1.TabStop = true;
+            linkLabel1.Text = "Git for Windows";
+            linkLabel1.LinkClicked += linkLabel1_LinkClicked;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(11F, 24F);
@@ -301,5 +316,6 @@
         private LinkLabel linkPath;
         private Button button1;
         private Label lblNumber;
+        private LinkLabel linkLabel1;
     }
 }
