@@ -34,6 +34,60 @@ public class SearchHelper(
         return versionsDict;
     }
 
+    public List<string> CopyFilesFrom(string fromMainFolder, string toMainFolder)
+    {
+        if (!Directory.Exists(fromMainFolder))
+            throw new DirectoryNotFoundException($"文件夹不存在：{fromMainFolder}。");
+        if (!Directory.Exists(toMainFolder))
+            throw new DirectoryNotFoundException($"文件夹不存在：{toMainFolder}。");
+
+        // 从 fromMainFolder 复制到 toMainFolder，包括子目录、覆盖已存在的文件
+        var copiedFiles = new List<string>();
+        var result = CopyFilesRecursive(fromMainFolder, toMainFolder, copiedFiles);
+        return result;
+    }
+
+    /// <summary>
+    /// 递归复制文件夹中的所有文件
+    /// </summary>
+    /// <param name="sourceFolder">源文件夹路径</param>
+    /// <param name="destinationFolder">目标文件夹路径</param>
+    /// <param name="copiedFiles">已复制文件列表</param>
+    /// <returns>复制成功的文件列表</returns>
+    private List<string> CopyFilesRecursive(string sourceFolder, string destinationFolder, ICollection<string> copiedFiles)
+    {
+        var result = new List<string>();
+        // 获取源文件夹中的所有文件
+        var files = Directory.GetFiles(sourceFolder);
+
+        foreach (var file in files)
+        {
+            // 获取文件名
+            var fileName = Path.GetFileName(file);
+            // 构建目标文件路径
+            var destinationPath = Path.Combine(destinationFolder, fileName);
+            // 确保目标文件夹存在
+            Directory.CreateDirectory(destinationFolder);
+            // 复制文件
+            File.Copy(file, destinationPath, true);
+            // 添加到已复制文件列表
+            copiedFiles.Add(destinationPath);
+        }
+
+        // 获取源文件夹中的所有子文件夹
+        var subfolders = Directory.GetDirectories(sourceFolder);
+
+        foreach (var subfolder in subfolders)
+        {
+            // 构建目标子文件夹路径
+            var destinationSubfolder = Path.Combine(destinationFolder, Path.GetFileName(subfolder));
+            // 递归复制子文件夹中的文件
+            result = CopyFilesRecursive(subfolder, destinationSubfolder, copiedFiles);
+        }
+        // 返回复制成功的文件列表，应该包含所有文件（包括子文件夹中的文件）
+        return result;
+    }
+
     public List<SearchResult> GroupByMainFolder(Dictionary<string, SearchResult> searchResults)
     {
         // 合并结果中 FullPath 的上两级目录相同的项
@@ -48,6 +102,17 @@ public class SearchHelper(
                 groupedResult.Add(mainExe);
         }
         return groupedResult;
+    }
+
+    /// <summary>
+    /// 判断是否是最新版本
+    /// </summary>
+    public static bool IsLatestVersion(string nowVersionString, Version lastVersion)
+    {
+        // lastVersion = "2.45.1";
+        // nowVersionString = "2.44.11";
+        var nowVersion = new Version(nowVersionString);
+        return nowVersion >= lastVersion;
     }
 
     private Dictionary<string, SearchResult> CheckVersions(EverythingEntry[] results, Version lastVersion, bool isIgnoreSmaller)
@@ -130,17 +195,6 @@ public class SearchHelper(
             result.ErrorMessage = e.Message;
         }
         return result;
-    }
-
-    /// <summary>
-    /// 判断是否是最新版本
-    /// </summary>
-    public static bool IsLatestVersion(string nowVersionString, Version lastVersion)
-    {
-        // lastVersion = "2.45.1";
-        // nowVersionString = "2.44.11";
-        var nowVersion = new Version(nowVersionString);
-        return nowVersion >= lastVersion;
     }
 
     private (bool isInstalled, string path) CheckRegistryForGit()

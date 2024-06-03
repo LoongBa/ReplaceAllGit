@@ -30,8 +30,9 @@
         {
             btnUpdate = new Button();
             groupBox2 = new GroupBox();
+            lblLatestVersion = new Label();
             linkLabel1 = new LinkLabel();
-            button1 = new Button();
+            btnRestore = new Button();
             groupBox1 = new GroupBox();
             lblNumber = new Label();
             btnSetAsDefault = new Button();
@@ -57,18 +58,21 @@
             // btnUpdate
             // 
             btnUpdate.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnUpdate.Enabled = false;
             btnUpdate.Location = new Point(1072, 836);
             btnUpdate.Name = "btnUpdate";
             btnUpdate.Size = new Size(112, 34);
             btnUpdate.TabIndex = 9;
             btnUpdate.Text = "&U 更新选中";
             btnUpdate.UseVisualStyleBackColor = true;
+            btnUpdate.Click += btnUpdate_Click;
             // 
             // groupBox2
             // 
             groupBox2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox2.Controls.Add(lblLatestVersion);
             groupBox2.Controls.Add(linkLabel1);
-            groupBox2.Controls.Add(button1);
+            groupBox2.Controls.Add(btnRestore);
             groupBox2.Controls.Add(groupBox1);
             groupBox2.Controls.Add(chkCombineSameFolder);
             groupBox2.Controls.Add(chkIgnoreSmaller);
@@ -83,27 +87,38 @@
             groupBox2.TabIndex = 1;
             groupBox2.TabStop = false;
             // 
+            // lblLatestVersion
+            // 
+            lblLatestVersion.AutoSize = true;
+            lblLatestVersion.Location = new Point(1111, 26);
+            lblLatestVersion.Name = "lblLatestVersion";
+            lblLatestVersion.Size = new Size(100, 24);
+            lblLatestVersion.TabIndex = 12;
+            lblLatestVersion.Text = "最新版本：";
+            // 
             // linkLabel1
             // 
             linkLabel1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             linkLabel1.AutoSize = true;
-            linkLabel1.Location = new Point(1199, 26);
+            linkLabel1.Location = new Point(932, 26);
             linkLabel1.Name = "linkLabel1";
-            linkLabel1.Size = new Size(148, 24);
+            linkLabel1.Size = new Size(173, 24);
             linkLabel1.TabIndex = 11;
             linkLabel1.TabStop = true;
-            linkLabel1.Text = "Git for Windows";
+            linkLabel1.Text = "🔗Git for Windows";
             linkLabel1.LinkClicked += linkLabel1_LinkClicked;
             // 
-            // button1
+            // btnRestore
             // 
-            button1.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            button1.Location = new Point(1214, 836);
-            button1.Name = "button1";
-            button1.Size = new Size(112, 34);
-            button1.TabIndex = 10;
-            button1.Text = "&R 恢复选中";
-            button1.UseVisualStyleBackColor = true;
+            btnRestore.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnRestore.Enabled = false;
+            btnRestore.Location = new Point(1214, 836);
+            btnRestore.Name = "btnRestore";
+            btnRestore.Size = new Size(112, 34);
+            btnRestore.TabIndex = 10;
+            btnRestore.Text = "&R 恢复选中";
+            btnRestore.UseVisualStyleBackColor = true;
+            btnRestore.Visible = false;
             // 
             // groupBox1
             // 
@@ -131,17 +146,19 @@
             // btnSetAsDefault
             // 
             btnSetAsDefault.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnSetAsDefault.Location = new Point(1203, 21);
+            btnSetAsDefault.Enabled = false;
+            btnSetAsDefault.Location = new Point(1185, 21);
             btnSetAsDefault.Name = "btnSetAsDefault";
-            btnSetAsDefault.Size = new Size(100, 33);
+            btnSetAsDefault.Size = new Size(112, 33);
             btnSetAsDefault.TabIndex = 3;
-            btnSetAsDefault.Text = "设为默认";
+            btnSetAsDefault.Text = "&D 设为默认";
             btnSetAsDefault.UseVisualStyleBackColor = true;
+            btnSetAsDefault.Click += btnSetAsDefault_Click;
             // 
             // lblVersion
             // 
             lblVersion.AutoSize = true;
-            lblVersion.Location = new Point(73, 30);
+            lblVersion.Location = new Point(58, 30);
             lblVersion.Name = "lblVersion";
             lblVersion.Size = new Size(62, 24);
             lblVersion.TabIndex = 1;
@@ -149,10 +166,10 @@
             // 
             // linkPath
             // 
-            linkPath.AutoSize = true;
-            linkPath.Location = new Point(158, 30);
+            linkPath.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            linkPath.Location = new Point(136, 30);
             linkPath.Name = "linkPath";
-            linkPath.Size = new Size(486, 24);
+            linkPath.Size = new Size(1025, 74);
             linkPath.TabIndex = 2;
             linkPath.TabStop = true;
             linkPath.Text = "D:\\_Dev_\\_Scoop_\\apps\\git\\2.45.1\\mingw64\\bin\\git.exe";
@@ -212,9 +229,9 @@
             lblDescription.AutoSize = true;
             lblDescription.Location = new Point(23, 26);
             lblDescription.Name = "lblDescription";
-            lblDescription.Size = new Size(951, 24);
+            lblDescription.Size = new Size(581, 24);
             lblDescription.TabIndex = 2;
-            lblDescription.Text = "当前系统中发现的 Git.exe 分别来自：环境变量（系统、用户）、各硬盘不同位置（往往是其它程序自带的 Git.exe）。";
+            lblDescription.Text = "当前系统中的 git.exe 分别来自：环境变量（系统、用户）、程序自带。";
             // 
             // lsvResult
             // 
@@ -231,6 +248,8 @@
             lsvResult.UseCompatibleStateImageBehavior = false;
             lsvResult.View = View.Details;
             lsvResult.ColumnClick += lsvResult_ColumnClick;
+            lsvResult.ItemCheck += lsvResult_ItemCheck;
+            lsvResult.ItemChecked += lsvResult_ItemChecked;
             lsvResult.SelectedIndexChanged += lsvResult_SelectedIndexChanged;
             // 
             // columnHeader1
@@ -312,8 +331,9 @@
         private Button btnSetAsDefault;
         private Label lblVersion;
         private LinkLabel linkPath;
-        private Button button1;
+        private Button btnRestore;
         private Label lblNumber;
         private LinkLabel linkLabel1;
+        private Label lblLatestVersion;
     }
 }

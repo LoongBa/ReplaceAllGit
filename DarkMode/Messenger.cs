@@ -49,7 +49,7 @@ namespace CoffeeScholar.ReplaceAllGit.DarkMode
         {
             Debug.WriteLine(icon.ToString());
 
-            MsgIcon Icon = MsgIcon.None;
+            var Icon = MsgIcon.None;
 
             /*
 				"..In current implementations there are ONLY four unique symbols with multiple values assigned to them."
@@ -79,23 +79,23 @@ namespace CoffeeScholar.ReplaceAllGit.DarkMode
             string Message, string title, MsgIcon Icon,
             MessageBoxButtons buttons = MessageBoxButtons.OK)
         {
-            Form form = new Form
+            var form = new Form
             {
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 StartPosition = FormStartPosition.CenterParent,
                 MaximizeBox = false,
                 MinimizeBox = false,
                 Text = title,
-                Width = 340,
-                Height = 170
+                Width = 640,
+                Height = 370
             };
 
-            DarkModeCS DMode = new DarkModeCS(form);
-            Base64Icons _Icons = new Base64Icons();
+            var DMode = new DarkModeCS(form);
+            var _Icons = new Base64Icons();
 
             #region Bottom Panel & Buttons
 
-            Panel bottomPanel = new Panel
+            var bottomPanel = new Panel
             {
                 Dock = DockStyle.Bottom,
                 Height = 48,
@@ -105,7 +105,7 @@ namespace CoffeeScholar.ReplaceAllGit.DarkMode
             form.Controls.Add(bottomPanel);
 
 
-            string CurrentLanguage = GetCurrentLanguage();
+            var CurrentLanguage = GetCurrentLanguage();
             var ButtonTranslations = GetButtonTranslations(CurrentLanguage); //<- "OK|Cancel|Yes|No|Continue|Retry|Abort"
 
             List<Button> CmdButtons = new List<Button>();
@@ -228,8 +228,8 @@ namespace CoffeeScholar.ReplaceAllGit.DarkMode
                     break;
             }
 
-            int Padding = 4;
-            int LastPos = form.ClientSize.Width;
+            var Padding = 4;
+            var LastPos = form.ClientSize.Width;
 
             foreach (var _button in CmdButtons)
             {
@@ -244,10 +244,10 @@ namespace CoffeeScholar.ReplaceAllGit.DarkMode
 
             #region Icon
 
-            Rectangle picBox = new Rectangle(2, 10, 0, 0);
+            var picBox = new Rectangle(2, 10, 0, 0);
             if (Icon != MsgIcon.None)
             {
-                PictureBox picIcon = new PictureBox() { SizeMode = PictureBoxSizeMode.Zoom, Size = new Size(64, 64) };
+                var picIcon = new PictureBox() { SizeMode = PictureBoxSizeMode.Zoom, Size = new Size(64, 64) };
                 picIcon.Image = _Icons.GetIcon(Icon);
                 form.Controls.Add(picIcon);
 
@@ -260,7 +260,7 @@ namespace CoffeeScholar.ReplaceAllGit.DarkMode
 
             #region Prompt Text
 
-            Label lblPrompt = new Label()
+            var lblPrompt = new Label()
             {
                 Text = Message,
                 AutoSize = true,
@@ -276,10 +276,10 @@ namespace CoffeeScholar.ReplaceAllGit.DarkMode
 
             #endregion
 
-            form.ClientSize = new Size(340,
+            form.ClientSize = new Size(900,
                 bottomPanel.Height +
                 lblPrompt.Height +
-                20
+                200
             );
 
             return form.ShowDialog();
@@ -312,7 +312,7 @@ namespace CoffeeScholar.ReplaceAllGit.DarkMode
             string title, string promptText, ref List<KeyValue> Fields,
             MsgIcon Icon = 0, MessageBoxButtons buttons = MessageBoxButtons.OK)
         {
-            Form form = new Form
+            var form = new Form
             {
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 StartPosition = FormStartPosition.CenterParent,
@@ -323,15 +323,15 @@ namespace CoffeeScholar.ReplaceAllGit.DarkMode
                 Height = 170
             };
 
-            DarkModeCS DMode = new DarkModeCS(form);
+            var DMode = new DarkModeCS(form);
 
             // Error Management & Icon Library:
-            ErrorProvider Err = new ErrorProvider();
-            Base64Icons _Icons = new Base64Icons();
+            var Err = new ErrorProvider();
+            var _Icons = new Base64Icons();
 
             #region Bottom Panel
 
-            Panel bottomPanel = new Panel
+            var bottomPanel = new Panel
             {
                 Dock = DockStyle.Bottom,
                 Height = 48,
@@ -346,7 +346,7 @@ namespace CoffeeScholar.ReplaceAllGit.DarkMode
 
             if (Icon != MsgIcon.None)
             {
-                PictureBox picIcon = new PictureBox() { SizeMode = PictureBoxSizeMode.Zoom, Size = new Size(48, 48) };
+                var picIcon = new PictureBox() { SizeMode = PictureBoxSizeMode.Zoom, Size = new Size(48, 48) };
                 picIcon.Image = _Icons.GetIcon(Icon);
                 bottomPanel.Controls.Add(picIcon);
 
@@ -358,7 +358,7 @@ namespace CoffeeScholar.ReplaceAllGit.DarkMode
 
             #region Buttons
 
-            string CurrentLanguage = GetCurrentLanguage();
+            var CurrentLanguage = GetCurrentLanguage();
             var ButtonTranslations = GetButtonTranslations(CurrentLanguage); //<- "OK|Cancel|Yes|No|Continue|Retry|Abort"
 
             List<Button> CmdButtons = new List<Button>();
@@ -481,8 +481,8 @@ namespace CoffeeScholar.ReplaceAllGit.DarkMode
                     break;
             }
 
-            int Padding = 4;
-            int LastPos = form.ClientSize.Width;
+            var Padding = 4;
+            var LastPos = form.ClientSize.Width;
 
             foreach (var _button in CmdButtons)
             {
@@ -509,7 +509,7 @@ namespace CoffeeScholar.ReplaceAllGit.DarkMode
 
             #region Prompt Text
 
-            Label lblPrompt = new Label()
+            var lblPrompt = new Label()
             {
                 Dock = DockStyle.Top,
                 Text = promptText,
@@ -524,7 +524,7 @@ namespace CoffeeScholar.ReplaceAllGit.DarkMode
 
             #region Controls for KeyValues
 
-            TableLayoutPanel Contenedor = new TableLayoutPanel()
+            var Contenedor = new TableLayoutPanel()
             {
                 Size = new Size(form.ClientSize.Width - 20, 50),
                 AutoSizeMode = AutoSizeMode.GrowAndShrink,
@@ -540,12 +540,12 @@ namespace CoffeeScholar.ReplaceAllGit.DarkMode
             Contenedor.ColumnStyles[1].Width = form.ClientSize.Width - 120;
             Contenedor.RowStyles.Clear();
 
-            int ChangeDelayMS = 1000; //<- Delay for Change event in Miliseconds
-            int currentRow = 0;
-            foreach (KeyValue field in Fields)
+            var ChangeDelayMS = 1000; //<- Delay for Change event in Miliseconds
+            var currentRow = 0;
+            foreach (var field in Fields)
             {
                 // Create Label and TextBox controls
-                Label field_label = new Label
+                var field_label = new Label
                 {
                     Text = field.Key,
                     AutoSize = false,
@@ -554,7 +554,7 @@ namespace CoffeeScholar.ReplaceAllGit.DarkMode
                 };
                 Control field_Control = null;
 
-                BorderStyle BStyle = DMode.IsDarkMode ? BorderStyle.FixedSingle : BorderStyle.Fixed3D;
+                var BStyle = DMode.IsDarkMode ? BorderStyle.FixedSingle : BorderStyle.Fixed3D;
 
                 if (field.ValueType == ValueTypes.String)
                 {
@@ -762,7 +762,7 @@ namespace CoffeeScholar.ReplaceAllGit.DarkMode
                 //Control Validations
                 if (form.ActiveControl == form.AcceptButton)
                 {
-                    ValidateEventArgs cArgs = new ValidateEventArgs(null);
+                    var cArgs = new ValidateEventArgs(null);
 
                     ValidateControlsHandler?.Invoke(form, cArgs); //<- Dispara el Evento
 
@@ -812,8 +812,8 @@ namespace CoffeeScholar.ReplaceAllGit.DarkMode
         /// <param name="pDefault">Default to return if Current lang is not supported.</param>
         public static string GetCurrentLanguage(string pDefault = "en")
         {
-            string _ret = pDefault;
-            string CurrentLanguage = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
+            var _ret = pDefault;
+            var CurrentLanguage = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
             if (IsCurrentLanguageSupported(new List<string>() { "en", "es", "fr", "de", "ru" }, CurrentLanguage))
             {
                 _ret = CurrentLanguage;
@@ -828,7 +828,7 @@ namespace CoffeeScholar.ReplaceAllGit.DarkMode
         {
             Dictionary<string, string> _ret = null;
 
-            Dictionary<string, string> ButtonTranslations = new Dictionary<string, string>
+            var ButtonTranslations = new Dictionary<string, string>
             {
                 { "en", "OK|Cancel|Yes|No|Continue|Retry|Abort|Ignore" },
                 { "es", "Aceptar|Cancelar|Sí|No|Continuar|Reintentar|Abortar|Ignorar" },
@@ -838,7 +838,7 @@ namespace CoffeeScholar.ReplaceAllGit.DarkMode
 				/* Add here you own language button translations */
 			};
 
-            string raw = ButtonTranslations[pLanguage];
+            var raw = ButtonTranslations[pLanguage];
             if (!string.IsNullOrEmpty(raw))
             {
                 var Words = raw.Split('|').ToList();
@@ -878,7 +878,7 @@ namespace CoffeeScholar.ReplaceAllGit.DarkMode
             // Handle alternative language codes (e.g., "pt-BR" for Brazilian Portuguese)
             if (currentLanguage.Length >= 2)
             {
-                string baseLanguage = currentLanguage.Substring(0, 2);
+                var baseLanguage = currentLanguage.Substring(0, 2);
                 return languages.Contains(baseLanguage);
             }
 
@@ -1108,7 +1108,7 @@ namespace CoffeeScholar.ReplaceAllGit.DarkMode
         /// <returns>'true' if succes. No Size restrictions for the image.</returns>
         public bool AddIcon(string pName, string pFilePath)
         {
-            bool _ret = false;
+            var _ret = false;
             if (!string.IsNullOrEmpty(pFilePath) && File.Exists(pFilePath))
             {
                 var _icon = File.ReadAllBytes(pFilePath);

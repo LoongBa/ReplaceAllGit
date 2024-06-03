@@ -20,5 +20,5 @@ public class SearchResult(EverythingEntry entry)
     public bool IsNeedUpdating { get; set; }
     public DateTime? CreationTime { get; set; }
     public DateTime? LastWriteTime { get; set; }
-    public string? MainFolder { get; set; } = string.Empty;
+    public string MainFolder { get; set; } = string.Empty;
 }
