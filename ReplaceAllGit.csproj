@@ -12,6 +12,7 @@
     <PackageProjectUrl>https://github.com/coffeescholar/ReplaceAllGit</PackageProjectUrl>
     <RepositoryUrl>https://github.com/coffeescholar/ReplaceAllGit</RepositoryUrl>
     <Platforms>AnyCPU;x64</Platforms>
+    <Version>1.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
