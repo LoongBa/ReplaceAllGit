@@ -13,13 +13,16 @@ public partial class MainForm : Form
     private int _SortColumn = -1;
 
     private bool _IsDefaultSet;
-    private bool _ItemSelected;
+    private bool _IsItemSelected;
+    private bool _IsItemChecked;
 
     private const string SearchPattern = "^git.exe$";
     private readonly SearchHelper _SearchHelper;
     private Version _LastVersion;
-    private Dictionary<string, SearchResult> _VersionList = new();
-    private SearchResult? _DefaultSearchResult;
+    private Dictionary<string, GitSearchResult> _VersionList = new();
+    private GitSearchResult? _DefaultSearchResult;
+    private GitSearchResult? _SelectedSearchResult;
+
     public MainForm()
     {
         InitializeComponent();
@@ -38,58 +41,8 @@ public partial class MainForm : Form
             linkPath.Image = scaledImage;
         }
 
-        var version = Task.Run(() =>
-        {
-            var url = "https://git-scm.com/";
-            var pattern = @"<span class=""version"">\s*?(?<version>\d+\.\d+\.\d+)\s*?</span>";
-            var version1 = CheckLatestVersionAsync(url, pattern);
-
-            url = "https://gitforwindows.org/";
-            pattern = @"<div class=""version""><a .*?>Version\s?(?<version>\d+\.\d+\.\d+)\s?</a></div>";
-            var version2 = CheckLatestVersionAsync(url, pattern);
-
-            var version = string.IsNullOrEmpty(version1)
-                ? new Version(version2)
-                : new Version(version1);
-
-            return version;
-        });
-
-        _LastVersion = version.Result;
-        lblLatestVersion.Text = $@"最新版本：{_LastVersion}";
-
-        // 使用正则表达式查找所有 git.exe
+        // 初始化
         _SearchHelper = new SearchHelper(["MinGW64", "Git"], "bin\\git.exe", @"\d+\.\d+\.\d+", "--version", 3 * 1024 * 1024);
-    }
-
-    private static string CheckLatestVersionAsync(string url, string pattern)
-    {
-        var html = new HttpClient().GetStringAsync(url).Result;
-        var match = Regex.Match(html, pattern, RegexOptions.Singleline);
-        var replacement = "${version}";
-        return match.Success ? match.Result(replacement) : string.Empty;
-    }
-    private void RefreshListView(IEnumerable<SearchResult> results)
-    {
-        var index = 0;
-        // 列出结果
-        foreach (var result in results.OrderByDescending(r => r.Version))
-        {
-            index++;
-            var inPath = result.IsInSysPath ? "系统" : string.Empty;
-            if (inPath.Length > 0) inPath += " | ";
-            inPath += result.IsInUserPath ? "用户" : string.Empty;
-
-            ListViewItem item = new(index.ToString("D2"));
-            item.SubItems.Add(result.Version);
-            item.SubItems.Add(result.IsNeedUpdating ? "需升级" : "已最新");
-            item.SubItems.Add(inPath);
-            item.SubItems.Add(SearchHelper.ComposeDisplayFileSize(result.Size));
-            item.SubItems.Add(result.LastWriteTime?.ToString("yyyy-MM-dd HH:mm:ss"));
-            item.SubItems.Add(result.FullPath);
-            item.Tag = result;
-            lsvResult.Items.Add(item);
-        }
     }
 
     private void OnUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
@@ -110,6 +63,32 @@ public partial class MainForm : Form
 
     }
 
+    #region 交互方法
+
+    private void RefreshListView(IEnumerable<GitSearchResult> results)
+    {
+        var index = 0;
+        // 列出结果
+        foreach (var result in results.OrderByDescending(r => r.Version))
+        {
+            index++;
+            var type = result.IsInSysPath ? "系统" : string.Empty;
+            if (type.Length > 0) type += " | ";
+            type += result.IsInUserPath ? "用户" : string.Empty;
+
+            ListViewItem item = new(result.Index = index.ToString("D2"));
+            item.SubItems.Add(result.Version);
+            item.SubItems.Add(result.IsNeedUpdating ? "需升级" : "");
+            item.SubItems.Add(type);
+            item.SubItems.Add(result.HasGitBash ? "有" : "");
+            item.SubItems.Add(SearchHelper.FormatFileSizeForDisplay(result.Size));
+            item.SubItems.Add(result.LastAccessTime?.ToString("yyyy-MM-dd HH:mm:ss"));
+            item.SubItems.Add(result.FullPath);
+            item.Tag = result;
+            lsvResult.Items.Add(item);
+        }
+    }
+
     private void ClearControls()
     {
         lsvResult.Items.Clear();
@@ -120,14 +99,152 @@ public partial class MainForm : Form
 
     private void CheckButtons()
     {
-        btnUpdate.Enabled = btnRestore.Enabled =
-            _IsDefaultSet && lsvResult.Items.Cast<ListViewItem>().Any(i => i.Checked);
+        btnSetAsDefault.Enabled = _IsItemSelected;
+        btnUpdate.Enabled = _IsDefaultSet && _IsItemChecked;
+        btnUpdateByBash.Enabled = _IsItemSelected && (_SelectedSearchResult?.HasGitBash ?? false);
     }
 
-    private void MainForm_Load(object sender, EventArgs e)
+    #endregion
+
+    #region 业务方法
+
+    private async Task<Version> CheckLatestVersionsAsync()
+    {
+        var replacementPattern = "${version}";
+
+        // 通过 Git-Scm 获取最新版本号 
+        var url = "https://git-scm.com/";
+        var searchPattern = @"<span class=""version"">\s*?(?<version>\d+\.\d+\.\d+)\s*?</span>";
+        var task1 = SearchHelper.CheckLatestVersionAsync(url, searchPattern, replacementPattern, RegexOptions.Singleline);
+
+        // 通过 gitforWindows.org 获取最新版本号
+        url = "https://gitforwindows.org/";
+        searchPattern = @"<div class=""version""><a .*?>Version\s?(?<version>\d+\.\d+\.\d+)\s?</a></div>";
+        var task2 = SearchHelper.CheckLatestVersionAsync(url, searchPattern, replacementPattern, RegexOptions.Singleline);
+
+        // 等待两个任务完成
+        var versions = await Task.WhenAll(task1, task2);
+        // 判断最新的版本号
+        var latestVersion = versions.Max();
+
+        // 返回最新版本号
+        return new Version(latestVersion ?? "");
+    }
+    private async Task<(string githubUrl, string huaweiUrl, string huaweiHomeUrl)> GetDownloadUrlAsync()
+    {
+        var replacementPattern = "${url}";
+
+        /*
+        // 通过 gitforwindows.org 获取最新版本号
+        var url = "https://gitforwindows.org";
+        //<a class="button featurebutton" href="https://github.com/git-for-windows/git/releases/download/v2.45.2.windows.1/Git-2.45.2-64-bit.exe" target="_blank">Download</a>
+        var searchPattern = @"<a class=""button featurebutton"" href=""(?<url>.*?)"" target=""_blank"">Download</a>";
+        */
+
+        // 通过 git-scm.com 获取最新版本号
+        var url = "https://git-scm.com/download/win";
+        //<a href="https://github.com/git-for-windows/git/releases/download/v2.45.2.windows.1/Git-2.45.2-64-bit.exe">64-bit Git for Windows Setup</a>
+        var searchPattern = @"<a href=\""(?<url>[^\""]*)\""[^<]*>64-bit Git for Windows Setup</a>";
+        var githubUrl = await SearchHelper.CheckLatestVersionAsync(url, searchPattern, replacementPattern, RegexOptions.Singleline);
+
+        // 替换为华为镜像地址
+        // https://github.com/git-for-windows/git/releases/download/v2.45.2.windows.1/Git-2.45.2-64-bit.exe
+        // https://mirrors.huaweicloud.com/git-for-windows/v2.45.2.windows.1/Git-2.45.2-64-bit.exe
+        var huaweiUrl = githubUrl.Replace("https://github.com/git-for-windows/git/releases/download/", "https://mirrors.huaweicloud.com/git-for-windows/");
+
+        // 正则表达式匹配URL直到最后一个斜杠
+        var match = Regex.Match(huaweiUrl, @"(.*/).*");
+        // 获取匹配的第一组，也就是URL直到最后一个斜杠的部分
+        var huaweiHomeUrl = match.Groups[1].Value;
+
+        // 返回最新版本号
+        return (githubUrl, huaweiUrl, huaweiHomeUrl);
+    }
+
+    /// <summary>
+    /// 查找 git-bash.exe
+    /// </summary>
+    private void SearchGitBash(Dictionary<string, GitSearchResult> versionList)
+    {
+        foreach (var pair in versionList)
+        {
+            // 在上级目录搜索 git-bash.exe
+            var targetFolder = Path.GetDirectoryName(pair.Value.MainFolder);
+            if (targetFolder != null)
+            {
+                var result = _SearchHelper.SearchFilesWith<GitSearchResult>("git-bash.exe", targetFolder);
+                if (result.Count > 0)
+                {
+                    var gitBash = result.First();
+                    pair.Value.GitBashFullPath = gitBash;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 基于 git-bash.exe 升级 Git
+    /// </summary>
+    /// <param name="selectedSearchResult"></param>
+    private bool UpdateGitByBash(GitSearchResult? selectedSearchResult)
+    {
+        if (selectedSearchResult == null) return false;
+        var gitBashPath = selectedSearchResult.GitBashFullPath;
+        if (string.IsNullOrEmpty(gitBashPath) || !File.Exists(gitBashPath))
+            return false;
+
+        // 运行 git-bash.exe
+        var arguments = "-c \"git --version\"";
+
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = gitBashPath,
+            Arguments = arguments,
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,  // 重定向错误流
+            CreateNoWindow = false
+        };
+
+        try
+        {
+            using var process = Process.Start(startInfo);
+            if (process != null)
+            {
+                // 读取输出
+                var versionOutput = process.StandardOutput.ReadToEnd();
+                // 读取错误输出
+                var error = process.StandardError.ReadToEnd();
+
+                process.WaitForExit();
+
+                Debug.WriteLine("Git Bash version:");
+                Debug.WriteLine(versionOutput);
+                Debug.WriteLine("Git Bash error:");
+                Debug.WriteLine(error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine("An error occurred while trying to get the Git Bash version: " + ex.Message);
+        }
+
+        return true;
+    }
+
+    #endregion
+
+    private async void MainForm_Load(object sender, EventArgs e)
     {
         Text = $@"Replace All Git - 查找 Git 并升级到最新版本 - {Application.ProductVersion}";
         ClearControls();
+
+        #region 检查最新版本
+        var version = await CheckLatestVersionsAsync();
+        _LastVersion = version;
+        lblLatestVersion.Text = _LastVersion.ToString();
+        lblLatestVersion.Visible = true;
+        #endregion
     }
 
     private void btnRefresh_Click(object sender, EventArgs e)
@@ -135,16 +252,11 @@ public partial class MainForm : Form
         ClearControls();
         btnRefresh.Enabled = false;
 
-        /*
-        // 查找注册表，已安装的 Git
-        var gitInstalled = CheckRegistryForGit();
-        if (gitInstalled.isInstalled)
-        {
-            Console.WriteLine($@"已安装 Git for Windows：{gitInstalled.fileFullPath}");
-        }
-        */
+        // 搜索所有 git.exe
+        _VersionList = _SearchHelper.SearchFiles<GitSearchResult>(_LastVersion, chkIgnoreSmaller.Checked, SearchPattern, true);
+        // 搜索 git-bash.exe
+        SearchGitBash(_VersionList);
 
-        _VersionList = _SearchHelper.SearchFiles(_LastVersion, chkIgnoreSmaller.Checked, SearchPattern, true);
         // 刷新 ListView
         if (chkCombineSameFolder.Checked)
             RefreshListView(_SearchHelper.GroupByMainFolder(_VersionList));
@@ -224,7 +336,7 @@ public partial class MainForm : Form
             {
                 var item = lsvResult.SelectedItems[0];
                 item.Checked = false;
-                _DefaultSearchResult = item.Tag as SearchResult;
+                _DefaultSearchResult = item.Tag as GitSearchResult;
 
                 _IsDefaultSet = true;
                 btnSetAsDefault.Text = @"&C 取消默认";
@@ -235,17 +347,21 @@ public partial class MainForm : Form
 
     private void lsvResult_SelectedIndexChanged(object sender, EventArgs e)
     {
-        _ItemSelected = lsvResult.SelectedItems.Count > 0;
+        _IsItemChecked = lsvResult.Items.Cast<ListViewItem>().Any(i => i.Checked);
+        _IsItemSelected = lsvResult.SelectedItems.Count > 0;
+        if (_IsItemSelected)
+            _SelectedSearchResult = lsvResult.SelectedItems[0].Tag as GitSearchResult;
+        else
+            _SelectedSearchResult = null;
 
-        btnSetAsDefault.Enabled = _ItemSelected;
         CheckButtons();
 
-        if (_ItemSelected && !_IsDefaultSet)
+        if (_SelectedSearchResult != null && !_IsDefaultSet)
         {
-            var item = lsvResult.SelectedItems[0];
-            lblNumber.Text = item.Text;
-            linkPath.Text = @"    " + item.SubItems[6].Text;
-            lblVersion.Text = item.SubItems[1].Text;
+            var item = _SelectedSearchResult;
+            lblNumber.Text = item.Index;
+            linkPath.Text = @"    " + item.FullPath;
+            lblVersion.Text = item.Version;
         }
     }
 
@@ -290,19 +406,6 @@ public partial class MainForm : Form
         linkPath.LinkVisited = false;
     }
 
-    private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-    {
-        //\u1F310 地球 \u1F517 链接
-        linkLabel1.LinkVisited = false;
-
-        var psi = new ProcessStartInfo
-        {
-            FileName = "https://gitforwindows.org/",
-            UseShellExecute = true
-        };
-        Process.Start(psi);
-    }
-
     private void lsvResult_ItemCheck(object sender, ItemCheckEventArgs e)
     {
         var item = lsvResult.Items[e.Index];
@@ -318,6 +421,70 @@ public partial class MainForm : Form
 
         }
 
+    }
+
+    private void btnUpdateByBash_Click(object sender, EventArgs e)
+    {
+        var result = UpdateGitByBash(_SelectedSearchResult);
+        if (!result)
+            MessageBox.Show(@"Git-Bash 升级失败。", @"提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+
+    private void lsvResult_SizeChanged(object sender, EventArgs e)
+    {
+        // 自动调整列宽
+        lsvResult.Columns[7].Width = -2;
+    }
+
+    private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+    {
+        //\u1F310 地球 \u1F517 链接
+        linkLabel1.LinkVisited = false;
+
+        var psi = new ProcessStartInfo
+        {
+            FileName = "https://gitforwindows.org/",
+            UseShellExecute = true
+        };
+        Process.Start(psi);
+    }
+
+    private async void lblLatestVersion_LinkClicked(object? sender, LinkLabelLinkClickedEventArgs e)
+    {
+        var (githubUrl, huaweiUrl, huaweiHomeUrl) = await GetDownloadUrlAsync();
+        var url = githubUrl;
+        var homeUrl = "https://gitforwindows.org/";
+        var dialogResult = MessageBox.Show(@"是否用华为镜像代替 Github.com 下载地址？",
+                                        @"访问下载网址",
+                                            MessageBoxButtons.YesNoCancel);
+
+        switch (dialogResult)
+        {
+            case DialogResult.Yes:
+                url = huaweiUrl;
+                homeUrl = huaweiHomeUrl;
+                break;
+            case DialogResult.No:
+                break;
+            case DialogResult.Cancel:
+            default:
+                return;
+        }
+        // 打开浏览器，访问下载地址
+        var psi = new ProcessStartInfo
+        {
+            FileName = url,
+            UseShellExecute = true
+        };
+        Process.Start(psi);
+
+        // 打开浏览器，访问下载地址
+        psi = new ProcessStartInfo
+        {
+            FileName = homeUrl,
+            UseShellExecute = true
+        };
+        Process.Start(psi);
     }
 }
 

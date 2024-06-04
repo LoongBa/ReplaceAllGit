@@ -15,13 +15,15 @@ public class SearchHelper(
 {
     private readonly Regex _ExtractVersionInfoRegex = new(extractVersionInfoRegexPattern);
 
-    public Dictionary<string, SearchResult> SearchFiles(Version lastVersion, bool isIgnoreSmaller, string searchPattern,
+    public Dictionary<string, TSearchResult> SearchFiles<TSearchResult>(Version lastVersion, bool isIgnoreSmaller, string searchPattern,
         bool isRegex = false)
+    where TSearchResult : SearchResult, new()
     {
         // 使用 Everything 搜索
+        var noRexPattern = @$"wholefilename:{searchPattern}";
         using EverythingSearcher everything = new();
         var searchResults = everything
-            .SearchFor(searchPattern)
+            .SearchFor(isRegex ? searchPattern : noRexPattern)
             .SetRegex(isRegex)
             .OrderBy(Sort.NameAscending)
             .WithResultLimit(50)
@@ -30,8 +32,33 @@ public class SearchHelper(
             .Execute().ToArray();
 
         // 验证版本
-        var versionsDict = CheckVersions(searchResults, lastVersion, isIgnoreSmaller);
+        var versionsDict = CheckVersions<TSearchResult>(searchResults, lastVersion, isIgnoreSmaller);
         return versionsDict;
+    }
+
+    public List<string> SearchFilesWith<TSearchResult>(string searchPattern, string targetFolder)
+    where TSearchResult : SearchResult, new()
+    {
+        // 使用 Everything 搜索
+        var pattern = @$"wholefilename:{searchPattern} {targetFolder}";
+        using EverythingSearcher everything = new();
+        var searchResults = everything
+            .SearchFor(pattern)
+            .SetRegex(false)
+            .OrderBy(Sort.NameAscending)
+            .WithResultLimit(100)
+            .WithOffset(0)
+            .GetFields(RequestFlags.FullPathAndFileName)
+            .Execute().ToArray();
+
+        var searchedFiles = new List<string>();
+        foreach (var entry in searchResults)
+        {
+            var result = new TSearchResult().CopyValuesFrom<TSearchResult>(entry);
+            searchedFiles.Add(result.FullPath);
+        }
+
+        return searchedFiles;
     }
 
     public List<string> CopyFilesFrom(string fromMainFolder, string toMainFolder)
@@ -88,12 +115,13 @@ public class SearchHelper(
         return result;
     }
 
-    public List<SearchResult> GroupByMainFolder(Dictionary<string, SearchResult> searchResults)
+    public List<TSearchResult> GroupByMainFolder<TSearchResult>(Dictionary<string, TSearchResult> searchResults)
+    where TSearchResult : SearchResult, new()
     {
         // 合并结果中 FullPath 的上两级目录相同的项
         var grouped = searchResults.GroupBy(r => r.Value.MainFolder);
         // 选取合并后的主程序
-        var groupedResult = new List<SearchResult>();
+        var groupedResult = new List<TSearchResult>();
         foreach (var group in grouped)
         {
             // 选取每组中 bin 目录下的 git.exe 项
@@ -115,17 +143,20 @@ public class SearchHelper(
         return nowVersion >= lastVersion;
     }
 
-    private Dictionary<string, SearchResult> CheckVersions(EverythingEntry[] results, Version lastVersion, bool isIgnoreSmaller)
+    private Dictionary<string, TSearchResult> CheckVersions<TSearchResult>(EverythingEntry[] results, Version lastVersion, bool isIgnoreSmaller)
+        where TSearchResult : SearchResult, new()
+
     {
         var variable = "Path";
         var sysPathString = Environment.GetEnvironmentVariable(variable, EnvironmentVariableTarget.Machine);
         var userPathString = Environment.GetEnvironmentVariable(variable, EnvironmentVariableTarget.User);
 
-        var dictionary = new Dictionary<string, SearchResult>();
+        var dictionary = new Dictionary<string, TSearchResult>();
         foreach (var entry in results)
         {
             // 获取详细信息
-            var result = CheckVersion(new SearchResult(entry));
+            var searchResult = new TSearchResult().CopyValuesFrom<TSearchResult>(entry);
+            var result = CheckVersion(searchResult);
             if (isIgnoreSmaller && ignoreSmallerFileSize > 0 && result.Size < ignoreSmallerFileSize)
                 continue;
 
@@ -158,7 +189,8 @@ public class SearchHelper(
         return dictionary;
     }
 
-    private SearchResult CheckVersion(SearchResult result)
+    private TSearchResult CheckVersion<TSearchResult>(TSearchResult result)
+    where TSearchResult : SearchResult, new()
     {
         try
         {
@@ -197,20 +229,20 @@ public class SearchHelper(
         return result;
     }
 
-    private (bool isInstalled, string path) CheckRegistryForGit()
+    public (bool isInstalled, string path) CheckRegistryForGit()
     {
         const string gitRegistryPath = @"SOFTWARE\GitForWindows";
         var key = Registry.LocalMachine.OpenSubKey(gitRegistryPath);
         if (key == null) return (false, string.Empty);
 
-        var installPath = (string)key.GetValue("InstallPath");
+        var installPath = (string)key.GetValue("InstallPath")!;
         if (string.IsNullOrEmpty(installPath))
             return (false, string.Empty);
         return (true, installPath);
 
     }
 
-    public static string ComposeDisplayFileSize(long fileSize)
+    public static string FormatFileSizeForDisplay(long fileSize)
     {
         var sizeString = fileSize switch
         {
@@ -221,5 +253,20 @@ public class SearchHelper(
             _ => string.Empty
         };
         return sizeString.Length > 0 ? sizeString : string.Empty;
+    }
+
+    public static async Task<string> CheckLatestVersionAsync(string url, string pattern, string replacementPattern, RegexOptions? regexOptions = null)
+    {
+        var html = await new HttpClient().GetStringAsync(url);
+        Match? match;
+        if (regexOptions != null)
+        {
+            var options = regexOptions.Value;
+            match = Regex.Match(html, pattern, options);
+        }
+        else
+            match = Regex.Match(html, pattern);
+
+        return match.Success ? match.Result(replacementPattern) : string.Empty;
     }
 }

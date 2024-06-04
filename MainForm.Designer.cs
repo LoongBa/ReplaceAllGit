@@ -30,9 +30,9 @@
         {
             btnUpdate = new Button();
             groupBox2 = new GroupBox();
-            lblLatestVersion = new Label();
+            lblLatestVersion = new LinkLabel();
             linkLabel1 = new LinkLabel();
-            btnRestore = new Button();
+            btnUpdateByBash = new Button();
             groupBox1 = new GroupBox();
             lblNumber = new Label();
             btnSetAsDefault = new Button();
@@ -47,10 +47,11 @@
             columnHeader1 = new ColumnHeader();
             columnHeader5 = new ColumnHeader();
             columnHeader6 = new ColumnHeader();
+            GitBash = new ColumnHeader();
             columnHeader3 = new ColumnHeader();
             columnHeader4 = new ColumnHeader();
             columnHeader7 = new ColumnHeader();
-            columnHeader2 = new ColumnHeader();
+            FullPath = new ColumnHeader();
             groupBox2.SuspendLayout();
             groupBox1.SuspendLayout();
             SuspendLayout();
@@ -59,11 +60,11 @@
             // 
             btnUpdate.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnUpdate.Enabled = false;
-            btnUpdate.Location = new Point(1072, 836);
+            btnUpdate.Location = new Point(1166, 836);
             btnUpdate.Name = "btnUpdate";
-            btnUpdate.Size = new Size(112, 34);
+            btnUpdate.Size = new Size(181, 34);
             btnUpdate.TabIndex = 9;
-            btnUpdate.Text = "&U 更新选中";
+            btnUpdate.Text = "&U 更新复选框选中";
             btnUpdate.UseVisualStyleBackColor = true;
             btnUpdate.Click += btnUpdate_Click;
             // 
@@ -72,7 +73,7 @@
             groupBox2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             groupBox2.Controls.Add(lblLatestVersion);
             groupBox2.Controls.Add(linkLabel1);
-            groupBox2.Controls.Add(btnRestore);
+            groupBox2.Controls.Add(btnUpdateByBash);
             groupBox2.Controls.Add(groupBox1);
             groupBox2.Controls.Add(chkCombineSameFolder);
             groupBox2.Controls.Add(chkIgnoreSmaller);
@@ -89,18 +90,22 @@
             // 
             // lblLatestVersion
             // 
+            lblLatestVersion.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             lblLatestVersion.AutoSize = true;
-            lblLatestVersion.Location = new Point(1111, 26);
+            lblLatestVersion.Location = new Point(1290, 26);
             lblLatestVersion.Name = "lblLatestVersion";
-            lblLatestVersion.Size = new Size(100, 24);
+            lblLatestVersion.Size = new Size(30, 24);
             lblLatestVersion.TabIndex = 12;
-            lblLatestVersion.Text = "最新版本：";
+            lblLatestVersion.TabStop = true;
+            lblLatestVersion.Text = "    ";
+            lblLatestVersion.Visible = false;
+            lblLatestVersion.LinkClicked += lblLatestVersion_LinkClicked;
             // 
             // linkLabel1
             // 
             linkLabel1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             linkLabel1.AutoSize = true;
-            linkLabel1.Location = new Point(932, 26);
+            linkLabel1.Location = new Point(1111, 26);
             linkLabel1.Name = "linkLabel1";
             linkLabel1.Size = new Size(173, 24);
             linkLabel1.TabIndex = 11;
@@ -108,17 +113,17 @@
             linkLabel1.Text = "🔗Git for Windows";
             linkLabel1.LinkClicked += linkLabel1_LinkClicked;
             // 
-            // btnRestore
+            // btnUpdateByBash
             // 
-            btnRestore.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnRestore.Enabled = false;
-            btnRestore.Location = new Point(1214, 836);
-            btnRestore.Name = "btnRestore";
-            btnRestore.Size = new Size(112, 34);
-            btnRestore.TabIndex = 10;
-            btnRestore.Text = "&R 恢复选中";
-            btnRestore.UseVisualStyleBackColor = true;
-            btnRestore.Visible = false;
+            btnUpdateByBash.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnUpdateByBash.Enabled = false;
+            btnUpdateByBash.Location = new Point(644, 836);
+            btnUpdateByBash.Name = "btnUpdateByBash";
+            btnUpdateByBash.Size = new Size(195, 34);
+            btnUpdateByBash.TabIndex = 10;
+            btnUpdateByBash.Text = "&B 基于 GitBash 升级";
+            btnUpdateByBash.UseVisualStyleBackColor = true;
+            btnUpdateByBash.Click += btnUpdateByBash_Click;
             // 
             // groupBox1
             // 
@@ -204,7 +209,7 @@
             // btnRefresh
             // 
             btnRefresh.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnRefresh.Location = new Point(932, 836);
+            btnRefresh.Location = new Point(1030, 836);
             btnRefresh.Name = "btnRefresh";
             btnRefresh.Size = new Size(112, 34);
             btnRefresh.TabIndex = 8;
@@ -237,7 +242,7 @@
             // 
             lsvResult.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             lsvResult.CheckBoxes = true;
-            lsvResult.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader5, columnHeader6, columnHeader3, columnHeader4, columnHeader7, columnHeader2 });
+            lsvResult.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader5, columnHeader6, GitBash, columnHeader3, columnHeader4, columnHeader7, FullPath });
             lsvResult.FullRowSelect = true;
             lsvResult.Location = new Point(22, 200);
             lsvResult.MultiSelect = false;
@@ -251,6 +256,7 @@
             lsvResult.ItemCheck += lsvResult_ItemCheck;
             lsvResult.ItemChecked += lsvResult_ItemChecked;
             lsvResult.SelectedIndexChanged += lsvResult_SelectedIndexChanged;
+            lsvResult.SizeChanged += lsvResult_SizeChanged;
             // 
             // columnHeader1
             // 
@@ -269,6 +275,10 @@
             columnHeader6.TextAlign = HorizontalAlignment.Center;
             columnHeader6.Width = 100;
             // 
+            // GitBash
+            // 
+            GitBash.Text = "Bash";
+            // 
             // columnHeader3
             // 
             columnHeader3.Text = "环境变量";
@@ -279,18 +289,18 @@
             // 
             columnHeader4.Text = "文件大小";
             columnHeader4.TextAlign = HorizontalAlignment.Right;
-            columnHeader4.Width = 150;
+            columnHeader4.Width = 120;
             // 
             // columnHeader7
             // 
-            columnHeader7.Text = "更新时间";
+            columnHeader7.Text = "最近访问";
             columnHeader7.TextAlign = HorizontalAlignment.Center;
             columnHeader7.Width = 200;
             // 
-            // columnHeader2
+            // FullPath
             // 
-            columnHeader2.Text = "完整路径";
-            columnHeader2.Width = 521;
+            FullPath.Text = "完整路径";
+            FullPath.Width = 491;
             // 
             // MainForm
             // 
@@ -320,7 +330,7 @@
         private ColumnHeader columnHeader3;
         private ColumnHeader columnHeader6;
         private ColumnHeader columnHeader5;
-        private ColumnHeader columnHeader2;
+        private ColumnHeader FullPath;
         private CheckBox chkSelectAll;
         private Button btnRefresh;
         private ColumnHeader columnHeader4;
@@ -331,9 +341,10 @@
         private Button btnSetAsDefault;
         private Label lblVersion;
         private LinkLabel linkPath;
-        private Button btnRestore;
+        private Button btnUpdateByBash;
         private Label lblNumber;
         private LinkLabel linkLabel1;
-        private Label lblLatestVersion;
+        private LinkLabel lblLatestVersion;
+        private ColumnHeader GitBash;
     }
 }

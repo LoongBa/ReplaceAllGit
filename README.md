@@ -122,13 +122,19 @@ Over the weekend, I wrote this small tool with my kid. I helped with some of the
 
 * [ ] V1.0 仅提供查找功能，基于 Everything
   
-  * [x] 基本功能
+  * [x] 基本功能：查找系统中所有 `git.exe`，并显示其版本号；
+  - [x] 复制功能：选中一个版本（比如最新版），并设为默认，并用复选框选中至少一个目标，以默认版本的文件覆盖目标位置的文件；
+  * [x] 提供深色模式风格，跟随系统设置、用户自行选择（浅色模式反而有点儿小问题）；
+  - [x] 自动检查 `Git` 最新版本：从 [git-gsm](https://www.git-gsm.com) 和 [gitforwindows.org](https://www.gitforwindows.org)；
   
-  * [x] 提供深色模式风格，跟随系统设置、用户自行选择
+  - [x] 自动获得下载地址、打开浏览器：可以采用 Huawei 官方镜像站下载；
+    
+    ——我主要用 `scoop` 所以这个方法意义不大。
   
-  * [ ] 没有安装 Everything 时，采用文件搜索的方式
-  - [ ] 加入多语言支持，英语
-- [ ] V2.0 提供复制功能
+  - [x] [实验] 从 `Git Bash` 升级——成功，但实际上是自动下载安装包，然后静默安装。同上。
+  * [ ] 没有安装 `Everything` 时，采用文件搜索的方式；
+  - [ ] 加入多语言支持，英语；
+- [ ] V2.0 提供恢复功能
   
   * 备份指定版本
   
@@ -143,46 +149,56 @@ Over the weekend, I wrote this small tool with my kid. I helped with some of the
   
   * 恢复备份
 
-* V3.x 采用 WPF、MAUI，学习、练手
+* V3.x 采用 WPF、MAUI，学习、练手（实在不习惯用 Python 做 GUI，后续考虑试试看 PyQt/Qt 和 Rust/Go）
 
-这是一个学习、练习项目，但基类可用于解决其它类似问题，例如：
-
-+ 查找系统里的 python.exe，并确定版本、升级、合并（软链接）
-
-+ 查找系统里的各种 AI 模型，并确定版本、升级、合并（软链接）——例如 SDWebUI、ComfyUI、Fooocus、SD Forge 等等，OLlama、LMStudio 等等的模型等。
+> 这是一个学习、练习项目，但基类可用于解决其它类似问题，例如：
+> 
+> + 查找系统里的 python.exe，并确定版本、升级、合并（软链接）
+> 
+> + 查找系统里的各种 AI 模型，并确定版本、升级、合并（软链接）——例如 SDWebUI、ComfyUI、Fooocus、SD Forge 等等，OLlama、LMStudio 等等的模型等。
 
 # Version Plan
 
 - [ ] V1.0 Only provides search function, based on Everything
   
-  - [x] Basic function
+  - [x] Basic function: Search for all git.exe in the system and display their version numbers;
   
-  - [x] Provide dark mode style, follow system settings, user's choice
+  - [x] Copy function: Select a version (such as the latest version), set it as the default, and select at least one target with the checkbox to overwrite the file at the target location with the default version file;
   
-  - [ ] Use file search when Everything is not installed
+  - [x] Provides dark mode style, follows system settings, user's own choice (light mode has some minor problems).
   
-  - [ ] Add multi-language support, English
+  - [x] Automatically checks for the latest version of Git: from [git-gsm](https://www.git-gsm.com) and [gitforwindows.org](https://www.gitforwindows.org).
+  
+  - [x] Automatically obtains download address, opens browser: can use Huawei official mirror site for download.
+    
+    —— I mainly use `scoop` so this method is not very meaningful.
+  
+  - [ ] [Experiment] Upgrade from `Git Bash` —— successful, but it actually automatically downloads the installation package, then installs silently. The same as above.
+  
+  - [ ] When Everything is not installed, use file search method;
+  
+  - [ ] Add multilingual support, English;   
 
-- [ ] V2.0 Provides copy function
-  
-  - Backup specified version
-  
-  - Overwrite specified version with the latest version
-  
-  - Restore backup
+  V2.0 Provides recovery function
+
+- Backup specified version
+
+- Overwrite specified version with the latest version
+
+- Restore backup
 
 - V2.x Provides soft link mapping function
   
   - Backup specified version
   
-  - Map to the latest version with soft link
+  - Map to the latest version with soft links
   
   - Restore backup
 
-- V3.x Use WPF, MAUI to learn and practice
+- V3.x Uses WPF, MAUI, learning, practice (really not used to using Python to do GUI, consider trying PyQt/Qt and Rust/Go later)
 
-This is a learning and practice project, but the base class can be used to solve other similar problems, such as:
-
-- Find python.exe in the system, and determine the version, upgrade, merge (soft link)
-
-- Find various AI models in the system, and determine the version, upgrade, merge (soft link) - for example, SDWebUI, ComfyUI, Fooocus, SD Forge, etc., OLlama, LMStudio models, etc.
+> This is a learning and practicing project, but the base class can be used to solve other similar problems, such as:
+> 
+> - Search for python.exe in the system, and determine the version, upgrade, merge (soft link)
+> 
+> - Search for various AI models in the system, and determine the version, upgrade, merge (soft link) - for example, SDWebUI, ComfyUI, Fooocus, SD Forge, etc., OLlama, LMStudio models, etc.
