@@ -18,6 +18,10 @@ public class SearchResult
     public string Index { get; set; } = string.Empty;
     public bool IsInUserPath { get; set; }
     public bool IsInSysPath { get; set; }
+    /// <summary>
+    /// 是否在 where 能找到的路径中
+    /// </summary>
+    public bool IsInWherePath { get; set; }
     public string FullPath { get; set; } = string.Empty;
     public string Version { get; set; } = string.Empty;
     public long Size { get; set; }

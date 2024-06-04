@@ -147,9 +147,13 @@ public class SearchHelper(
         where TSearchResult : SearchResult, new()
 
     {
+        #region 获取环境变量中 Path 的值
+        /*
         var variable = "Path";
         var sysPathString = Environment.GetEnvironmentVariable(variable, EnvironmentVariableTarget.Machine);
         var userPathString = Environment.GetEnvironmentVariable(variable, EnvironmentVariableTarget.User);
+        */
+        #endregion
 
         var dictionary = new Dictionary<string, TSearchResult>();
         foreach (var entry in results)
@@ -164,12 +168,16 @@ public class SearchHelper(
             var fileFolder = Path.GetDirectoryName((string?)result.FullPath);
             Debug.Assert(fileFolder != null, nameof(fileFolder) + " != null");
 
-            result.IsInSysPath = sysPathString?.Contains(fileFolder) ?? false;
-            result.IsInUserPath = userPathString?.Contains(fileFolder) ?? false;
+            // 判断是否在环境变量 Path 中
+            // result.IsInSysPath = sysPathString?.Contains(fileFolder) ?? false;
+            // result.IsInUserPath = userPathString?.Contains(fileFolder) ?? false;
+            // result.IsInWherePath = gitPaths?.Any(p => p.Contains(fileFolder)) ?? false;
+
+            // 判断是否需要更新
             result.IsNeedUpdating = !IsLatestVersion(result.Version, lastVersion);
 
             // 主目录：向上取若干级，直到符合指定名字
-            string? parentFolder = result.FullPath;
+            var parentFolder = result.FullPath;
             string? folderName;
             do
             {
@@ -187,6 +195,22 @@ public class SearchHelper(
                 Debug.WriteLine(@$"ERROR: {entry}\r\n\t{result.Version}");
         }
         return dictionary;
+    }
+
+    public static string[] GetPathsByCmdWhere(string exeName)
+    {
+        // 运行 CMD "where git.exe" 查看所有 git.exe 的路径
+        var psi = new ProcessStartInfo("where", exeName)
+        {
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+        using var process = Process.Start(psi);
+        var output = process?.StandardOutput.ReadToEnd();
+        process?.WaitForExit();
+        var gitPaths = output?.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+        return gitPaths ?? [];
     }
 
     private TSearchResult CheckVersion<TSearchResult>(TSearchResult result)

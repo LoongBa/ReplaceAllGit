@@ -178,7 +178,7 @@ Over the weekend, I wrote this small tool with my kid. I helped with some of the
   - [ ] When Everything is not installed, use file search method;
   
   - [ ] Add multilingual support, English;   
-
+  
   V2.0 Provides recovery function
 
 - Backup specified version

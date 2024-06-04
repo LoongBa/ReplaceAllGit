@@ -2,6 +2,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using CoffeeScholar.ReplaceAllGit.DarkMode;
 using Microsoft.Win32;
 
@@ -18,10 +19,11 @@ public partial class MainForm : Form
 
     private const string SearchPattern = "^git.exe$";
     private readonly SearchHelper _SearchHelper;
-    private Version _LastVersion;
+    private Version _LastVersion = new();
     private Dictionary<string, GitSearchResult> _VersionList = new();
     private GitSearchResult? _DefaultSearchResult;
     private GitSearchResult? _SelectedSearchResult;
+    private string[] _WhereIsGit_Paths_ = [];
 
     public MainForm()
     {
@@ -39,6 +41,8 @@ public partial class MainForm : Form
             var scaledImage = bitmap?.GetThumbnailImage(16, 16, null, IntPtr.Zero);
             linkPath.ImageAlign = ContentAlignment.TopLeft;
             linkPath.Image = scaledImage;
+            linkWhere.ImageAlign = ContentAlignment.TopLeft;
+            linkWhere.Image = scaledImage;
         }
 
         // 初始化
@@ -69,24 +73,36 @@ public partial class MainForm : Form
     {
         var index = 0;
         // 列出结果
+        var gitPaths = _WhereIsGit_Paths_;
         foreach (var result in results.OrderByDescending(r => r.Version))
         {
             index++;
+            /*
             var type = result.IsInSysPath ? "系统" : string.Empty;
             if (type.Length > 0) type += " | ";
             type += result.IsInUserPath ? "用户" : string.Empty;
-
+            */
+            result.IsInWherePath = _WhereIsGit_Paths_.Contains(result.FullPath);
+            var type = result.IsInWherePath ? "在" : "";
             ListViewItem item = new(result.Index = index.ToString("D2"));
             item.SubItems.Add(result.Version);
             item.SubItems.Add(result.IsNeedUpdating ? "需升级" : "");
-            item.SubItems.Add(type);
             item.SubItems.Add(result.HasGitBash ? "有" : "");
+            item.SubItems.Add(type);
             item.SubItems.Add(SearchHelper.FormatFileSizeForDisplay(result.Size));
             item.SubItems.Add(result.LastAccessTime?.ToString("yyyy-MM-dd HH:mm:ss"));
             item.SubItems.Add(result.FullPath);
             item.Tag = result;
             lsvResult.Items.Add(item);
         }
+    }
+
+    private static void OpenWithExplorer(string fullPath)
+    {
+        if (!File.Exists(fullPath)) return;
+        var folder = Path.GetDirectoryName(fullPath);
+        if (folder != null)
+            Process.Start("explorer.exe", folder);
     }
 
     private void ClearControls()
@@ -194,7 +210,7 @@ public partial class MainForm : Form
             return false;
 
         // 运行 git-bash.exe
-        var arguments = "-c \"git --version\"";
+        var arguments = "-c \"git update-git-for-windows\"";
 
         var startInfo = new ProcessStartInfo
         {
@@ -203,7 +219,7 @@ public partial class MainForm : Form
             UseShellExecute = false,
             RedirectStandardOutput = true,
             RedirectStandardError = true,  // 重定向错误流
-            CreateNoWindow = false
+            CreateNoWindow = true
         };
 
         try
@@ -231,7 +247,6 @@ public partial class MainForm : Form
 
         return true;
     }
-
     #endregion
 
     private async void MainForm_Load(object sender, EventArgs e)
@@ -244,13 +259,30 @@ public partial class MainForm : Form
         _LastVersion = version;
         lblLatestVersion.Text = _LastVersion.ToString();
         lblLatestVersion.Visible = true;
+        btnSearchAll.Enabled = true;
         #endregion
+
+        // 获取 where 命令中是否包含指定的程序
+        var exeName = "git.exe";
+        await Task.Run(async () =>
+        {
+            // 获取 git.exe 的路径
+            var gitPaths = SearchHelper.GetPathsByCmdWhere(exeName);
+            _WhereIsGit_Paths_ = gitPaths;
+
+            // 在 UI 线程中更新 linkWhere.Text
+            Invoke(() => linkWhere.Text = @"    " + string.Join(Environment.NewLine, gitPaths));
+
+            // 刷新 ListView
+            BeginInvoke(() => btnSearchAll_Click(this, EventArgs.Empty));
+        });
+
     }
 
-    private void btnRefresh_Click(object sender, EventArgs e)
+    private void btnSearchAll_Click(object sender, EventArgs e)
     {
         ClearControls();
-        btnRefresh.Enabled = false;
+        btnSearchAll.Enabled = false;
 
         // 搜索所有 git.exe
         _VersionList = _SearchHelper.SearchFiles<GitSearchResult>(_LastVersion, chkIgnoreSmaller.Checked, SearchPattern, true);
@@ -263,7 +295,7 @@ public partial class MainForm : Form
         else
             RefreshListView(_VersionList.Values);
 
-        btnRefresh.Enabled = true;
+        btnSearchAll.Enabled = true;
     }
 
     private void btnUpdate_Click(object sender, EventArgs e)
@@ -315,7 +347,7 @@ public partial class MainForm : Form
             }
         }
         if (needRefresh)
-            btnRefresh_Click(this, e);  // 刷新 ListView
+            btnSearchAll_Click(this, e);  // 刷新 ListView
     }
 
     private void btnSetAsDefault_Click(object sender, EventArgs e)
@@ -395,17 +427,6 @@ public partial class MainForm : Form
             item.Checked = chkSelectAll.Checked;
     }
 
-    private void linkPath_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-    {
-        // 打开文件夹
-        var path = linkPath.Text.Trim();
-        if (!File.Exists(path)) return;
-        var folder = Path.GetDirectoryName(path);
-        if (folder != null)
-            Process.Start("explorer.exe", folder);
-        linkPath.LinkVisited = false;
-    }
-
     private void lsvResult_ItemCheck(object sender, ItemCheckEventArgs e)
     {
         var item = lsvResult.Items[e.Index];
@@ -434,19 +455,6 @@ public partial class MainForm : Form
     {
         // 自动调整列宽
         lsvResult.Columns[7].Width = -2;
-    }
-
-    private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-    {
-        //\u1F310 地球 \u1F517 链接
-        linkLabel1.LinkVisited = false;
-
-        var psi = new ProcessStartInfo
-        {
-            FileName = "https://gitforwindows.org/",
-            UseShellExecute = true
-        };
-        Process.Start(psi);
     }
 
     private async void lblLatestVersion_LinkClicked(object? sender, LinkLabelLinkClickedEventArgs e)
@@ -485,6 +493,35 @@ public partial class MainForm : Form
             UseShellExecute = true
         };
         Process.Start(psi);
+    }
+
+    private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+    {
+        //\u1F310 地球 \u1F517 链接
+        linkLabel1.LinkVisited = false;
+
+        var psi = new ProcessStartInfo
+        {
+            FileName = "https://gitforwindows.org/",
+            UseShellExecute = true
+        };
+        Process.Start(psi);
+    }
+
+    private void linkPath_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+    {
+        // 打开文件夹
+        var path = linkPath.Text.Trim();
+        linkPath.LinkVisited = false;
+        OpenWithExplorer(path);
+    }
+
+    private void LinkWhereLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+    {
+        // 打开文件夹
+        var path = linkWhere.Text.Trim();
+        linkPath.LinkVisited = false;
+        OpenWithExplorer(path);
     }
 }
 

@@ -34,13 +34,15 @@
             linkLabel1 = new LinkLabel();
             btnUpdateByBash = new Button();
             groupBox1 = new GroupBox();
+            label1 = new Label();
+            linkWhere = new LinkLabel();
             lblNumber = new Label();
             btnSetAsDefault = new Button();
             lblVersion = new Label();
             linkPath = new LinkLabel();
             chkCombineSameFolder = new CheckBox();
             chkIgnoreSmaller = new CheckBox();
-            btnRefresh = new Button();
+            btnSearchAll = new Button();
             chkSelectAll = new CheckBox();
             lblDescription = new Label();
             lsvResult = new MyListView();
@@ -77,7 +79,7 @@
             groupBox2.Controls.Add(groupBox1);
             groupBox2.Controls.Add(chkCombineSameFolder);
             groupBox2.Controls.Add(chkIgnoreSmaller);
-            groupBox2.Controls.Add(btnRefresh);
+            groupBox2.Controls.Add(btnSearchAll);
             groupBox2.Controls.Add(chkSelectAll);
             groupBox2.Controls.Add(lblDescription);
             groupBox2.Controls.Add(btnUpdate);
@@ -123,11 +125,14 @@
             btnUpdateByBash.TabIndex = 10;
             btnUpdateByBash.Text = "&B 基于 GitBash 升级";
             btnUpdateByBash.UseVisualStyleBackColor = true;
+            btnUpdateByBash.Visible = false;
             btnUpdateByBash.Click += btnUpdateByBash_Click;
             // 
             // groupBox1
             // 
             groupBox1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox1.Controls.Add(label1);
+            groupBox1.Controls.Add(linkWhere);
             groupBox1.Controls.Add(lblNumber);
             groupBox1.Controls.Add(btnSetAsDefault);
             groupBox1.Controls.Add(lblVersion);
@@ -139,10 +144,28 @@
             groupBox1.TabStop = false;
             groupBox1.Text = "选中项详情";
             // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(13, 36);
+            label1.Name = "label1";
+            label1.Size = new Size(107, 24);
+            label1.TabIndex = 5;
+            label1.Text = "环境 Where";
+            // 
+            // linkWhere
+            // 
+            linkWhere.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            linkWhere.Location = new Point(136, 36);
+            linkWhere.Name = "linkWhere";
+            linkWhere.Size = new Size(1025, 34);
+            linkWhere.TabIndex = 4;
+            linkWhere.LinkClicked += LinkWhereLinkClicked;
+            // 
             // lblNumber
             // 
             lblNumber.AutoSize = true;
-            lblNumber.Location = new Point(13, 30);
+            lblNumber.Location = new Point(13, 74);
             lblNumber.Name = "lblNumber";
             lblNumber.Size = new Size(21, 24);
             lblNumber.TabIndex = 0;
@@ -152,7 +175,7 @@
             // 
             btnSetAsDefault.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnSetAsDefault.Enabled = false;
-            btnSetAsDefault.Location = new Point(1185, 21);
+            btnSetAsDefault.Location = new Point(1185, 70);
             btnSetAsDefault.Name = "btnSetAsDefault";
             btnSetAsDefault.Size = new Size(112, 33);
             btnSetAsDefault.TabIndex = 3;
@@ -163,7 +186,7 @@
             // lblVersion
             // 
             lblVersion.AutoSize = true;
-            lblVersion.Location = new Point(58, 30);
+            lblVersion.Location = new Point(58, 74);
             lblVersion.Name = "lblVersion";
             lblVersion.Size = new Size(62, 24);
             lblVersion.TabIndex = 1;
@@ -172,9 +195,9 @@
             // linkPath
             // 
             linkPath.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            linkPath.Location = new Point(136, 30);
+            linkPath.Location = new Point(136, 74);
             linkPath.Name = "linkPath";
-            linkPath.Size = new Size(1025, 74);
+            linkPath.Size = new Size(1025, 34);
             linkPath.TabIndex = 2;
             linkPath.TabStop = true;
             linkPath.Text = "D:\\_Dev_\\_Scoop_\\apps\\git\\2.45.1\\mingw64\\bin\\git.exe";
@@ -206,16 +229,17 @@
             chkIgnoreSmaller.Text = "忽略较小的文件";
             chkIgnoreSmaller.UseVisualStyleBackColor = true;
             // 
-            // btnRefresh
+            // btnSearchAll
             // 
-            btnRefresh.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnRefresh.Location = new Point(1030, 836);
-            btnRefresh.Name = "btnRefresh";
-            btnRefresh.Size = new Size(112, 34);
-            btnRefresh.TabIndex = 8;
-            btnRefresh.Text = "&S 搜索全盘";
-            btnRefresh.UseVisualStyleBackColor = true;
-            btnRefresh.Click += btnRefresh_Click;
+            btnSearchAll.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnSearchAll.Enabled = false;
+            btnSearchAll.Location = new Point(1030, 836);
+            btnSearchAll.Name = "btnSearchAll";
+            btnSearchAll.Size = new Size(112, 34);
+            btnSearchAll.TabIndex = 8;
+            btnSearchAll.Text = "&S 搜索全盘";
+            btnSearchAll.UseVisualStyleBackColor = true;
+            btnSearchAll.Click += btnSearchAll_Click;
             // 
             // chkSelectAll
             // 
@@ -332,7 +356,7 @@
         private ColumnHeader columnHeader5;
         private ColumnHeader FullPath;
         private CheckBox chkSelectAll;
-        private Button btnRefresh;
+        private Button btnSearchAll;
         private ColumnHeader columnHeader4;
         private ColumnHeader columnHeader7;
         private CheckBox chkIgnoreSmaller;
@@ -346,5 +370,7 @@
         private LinkLabel linkLabel1;
         private LinkLabel lblLatestVersion;
         private ColumnHeader GitBash;
+        private Label label1;
+        private LinkLabel linkWhere;
     }
 }
