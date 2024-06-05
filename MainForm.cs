@@ -118,6 +118,14 @@ public partial class MainForm : Form
         btnSetAsDefault.Enabled = _IsItemSelected;
         btnUpdate.Enabled = _IsDefaultSet && _IsItemChecked;
         btnUpdateByBash.Enabled = _IsItemSelected && (_SelectedSearchResult?.HasGitBash ?? false);
+
+        if (_SelectedSearchResult != null && !_IsDefaultSet)
+        {
+            var item = _SelectedSearchResult;
+            lblNumber.Text = item.Index;
+            linkPath.Text = @"    " + item.FullPath;
+            lblVersion.Text = item.Version;
+        }
     }
 
     #endregion
@@ -202,43 +210,48 @@ public partial class MainForm : Form
     /// 基于 git-bash.exe 升级 Git
     /// </summary>
     /// <param name="selectedSearchResult"></param>
-    private bool UpdateGitByBash(GitSearchResult? selectedSearchResult)
+    private bool RunGitBash(GitSearchResult? selectedSearchResult)
     {
         if (selectedSearchResult == null) return false;
+
         var gitBashPath = selectedSearchResult.GitBashFullPath;
         if (string.IsNullOrEmpty(gitBashPath) || !File.Exists(gitBashPath))
             return false;
 
         // 运行 git-bash.exe
-        var arguments = "-c \"git update-git-for-windows\"";
+        // var arguments = "-c \"git update-git-for-windows\"";
 
         var startInfo = new ProcessStartInfo
         {
             FileName = gitBashPath,
-            Arguments = arguments,
+            // Arguments = arguments,
             UseShellExecute = false,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,  // 重定向错误流
-            CreateNoWindow = true
+            // RedirectStandardOutput = true,
+            // RedirectStandardError = true,  // 重定向错误流
+            CreateNoWindow = false
         };
 
         try
         {
             using var process = Process.Start(startInfo);
+            /*
             if (process != null)
             {
-                // 读取输出
-                var versionOutput = process.StandardOutput.ReadToEnd();
-                // 读取错误输出
-                var error = process.StandardError.ReadToEnd();
+                // // 读取输出
+                // var versionOutput = process.StandardOutput.ReadToEnd();
+                // // 读取错误输出
+                // var error = process.StandardError.ReadToEnd();
 
-                process.WaitForExit();
+                //process.WaitForExitAsync();
 
+                /*
                 Debug.WriteLine("Git Bash version:");
                 Debug.WriteLine(versionOutput);
                 Debug.WriteLine("Git Bash error:");
                 Debug.WriteLine(error);
+            #1#
             }
+        */
         }
         catch (Exception ex)
         {
@@ -259,7 +272,6 @@ public partial class MainForm : Form
         _LastVersion = version;
         lblLatestVersion.Text = _LastVersion.ToString();
         lblLatestVersion.Visible = true;
-        btnSearchAll.Enabled = true;
         #endregion
 
         // 获取 where 命令中是否包含指定的程序
@@ -271,10 +283,11 @@ public partial class MainForm : Form
             _WhereIsGit_Paths_ = gitPaths;
 
             // 在 UI 线程中更新 linkWhere.Text
-            Invoke(() => linkWhere.Text = @"    " + string.Join(Environment.NewLine, gitPaths));
+            Invoke(() => linkWhere.Text = @"    " + string.Join(" | ", gitPaths));
 
-            // 刷新 ListView
+            // SearchAll
             BeginInvoke(() => btnSearchAll_Click(this, EventArgs.Empty));
+            //btnSearchAll.Enabled = true;
         });
 
     }
@@ -377,6 +390,16 @@ public partial class MainForm : Form
         CheckButtons();
     }
 
+    private void btnUpdateByBash_Click(object sender, EventArgs e)
+    {
+        RunGitBash(_SelectedSearchResult);
+        /*
+        var result = RunGitBash(_SelectedSearchResult);
+        if (!result)
+            MessageBox.Show(@"Git-Bash 升级失败。", @"提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+    */
+    }
+
     private void lsvResult_SelectedIndexChanged(object sender, EventArgs e)
     {
         _IsItemChecked = lsvResult.Items.Cast<ListViewItem>().Any(i => i.Checked);
@@ -387,14 +410,6 @@ public partial class MainForm : Form
             _SelectedSearchResult = null;
 
         CheckButtons();
-
-        if (_SelectedSearchResult != null && !_IsDefaultSet)
-        {
-            var item = _SelectedSearchResult;
-            lblNumber.Text = item.Index;
-            linkPath.Text = @"    " + item.FullPath;
-            lblVersion.Text = item.Version;
-        }
     }
 
     private void lsvResult_ItemChecked(object sender, ItemCheckedEventArgs e)
@@ -420,13 +435,6 @@ public partial class MainForm : Form
         lsvResult.ListViewItemSorter = new ListViewItemComparer(e.Column, lsvResult.Sorting);
     }
 
-    private void chkSelectAll_CheckedChanged(object sender, EventArgs e)
-    {
-        // 全选，或全不选
-        foreach (ListViewItem item in lsvResult.Items)
-            item.Checked = chkSelectAll.Checked;
-    }
-
     private void lsvResult_ItemCheck(object sender, ItemCheckEventArgs e)
     {
         var item = lsvResult.Items[e.Index];
@@ -444,17 +452,17 @@ public partial class MainForm : Form
 
     }
 
-    private void btnUpdateByBash_Click(object sender, EventArgs e)
-    {
-        var result = UpdateGitByBash(_SelectedSearchResult);
-        if (!result)
-            MessageBox.Show(@"Git-Bash 升级失败。", @"提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
-    }
-
     private void lsvResult_SizeChanged(object sender, EventArgs e)
     {
         // 自动调整列宽
         lsvResult.Columns[7].Width = -2;
+    }
+
+    private void chkSelectAll_CheckedChanged(object sender, EventArgs e)
+    {
+        // 全选，或全不选
+        foreach (ListViewItem item in lsvResult.Items)
+            item.Checked = chkSelectAll.Checked;
     }
 
     private async void lblLatestVersion_LinkClicked(object? sender, LinkLabelLinkClickedEventArgs e)
@@ -519,9 +527,9 @@ public partial class MainForm : Form
     private void LinkWhereLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
     {
         // 打开文件夹
-        var path = linkWhere.Text.Trim();
+        foreach (var path in _WhereIsGit_Paths_)
+            OpenWithExplorer(path);
         linkPath.LinkVisited = false;
-        OpenWithExplorer(path);
     }
 }
 

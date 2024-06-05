@@ -123,9 +123,8 @@
             btnUpdateByBash.Name = "btnUpdateByBash";
             btnUpdateByBash.Size = new Size(195, 34);
             btnUpdateByBash.TabIndex = 10;
-            btnUpdateByBash.Text = "&B 基于 GitBash 升级";
+            btnUpdateByBash.Text = "&B 运行 Git Bash";
             btnUpdateByBash.UseVisualStyleBackColor = true;
-            btnUpdateByBash.Visible = false;
             btnUpdateByBash.Click += btnUpdateByBash_Click;
             // 
             // groupBox1
