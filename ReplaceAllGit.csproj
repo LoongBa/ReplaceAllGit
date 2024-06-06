@@ -12,7 +12,7 @@
     <PackageProjectUrl>https://github.com/coffeescholar/ReplaceAllGit</PackageProjectUrl>
     <RepositoryUrl>https://github.com/coffeescholar/ReplaceAllGit</RepositoryUrl>
     <Platforms>AnyCPU;x64</Platforms>
-    <Version>1.2.2</Version>
+    <Version>1.3</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,6 +32,22 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="icons\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="LICENSE.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="README.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Readme.rtf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

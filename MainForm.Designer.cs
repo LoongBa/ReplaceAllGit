@@ -28,12 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             btnUpdate = new Button();
             groupBox2 = new GroupBox();
+            pictGit = new PictureBox();
             lblLatestVersion = new LinkLabel();
-            linkLabel1 = new LinkLabel();
             btnUpdateByBash = new Button();
             groupBox1 = new GroupBox();
+            pictHelp = new PictureBox();
             label1 = new Label();
             linkWhere = new LinkLabel();
             lblNumber = new Label();
@@ -54,8 +56,11 @@
             columnHeader4 = new ColumnHeader();
             columnHeader7 = new ColumnHeader();
             FullPath = new ColumnHeader();
+            imageList = new ImageList(components);
             groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictGit).BeginInit();
             groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictHelp).BeginInit();
             SuspendLayout();
             // 
             // btnUpdate
@@ -73,8 +78,8 @@
             // groupBox2
             // 
             groupBox2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox2.Controls.Add(pictGit);
             groupBox2.Controls.Add(lblLatestVersion);
-            groupBox2.Controls.Add(linkLabel1);
             groupBox2.Controls.Add(btnUpdateByBash);
             groupBox2.Controls.Add(groupBox1);
             groupBox2.Controls.Add(chkCombineSameFolder);
@@ -90,6 +95,17 @@
             groupBox2.TabIndex = 1;
             groupBox2.TabStop = false;
             // 
+            // pictGit
+            // 
+            pictGit.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            pictGit.Image = Properties.Resources.git;
+            pictGit.Location = new Point(1248, 25);
+            pictGit.Name = "pictGit";
+            pictGit.Size = new Size(35, 35);
+            pictGit.TabIndex = 13;
+            pictGit.TabStop = false;
+            pictGit.Click += pictGit_Click;
+            // 
             // lblLatestVersion
             // 
             lblLatestVersion.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -102,18 +118,6 @@
             lblLatestVersion.Text = "    ";
             lblLatestVersion.Visible = false;
             lblLatestVersion.LinkClicked += lblLatestVersion_LinkClicked;
-            // 
-            // linkLabel1
-            // 
-            linkLabel1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            linkLabel1.AutoSize = true;
-            linkLabel1.Location = new Point(1111, 26);
-            linkLabel1.Name = "linkLabel1";
-            linkLabel1.Size = new Size(173, 24);
-            linkLabel1.TabIndex = 11;
-            linkLabel1.TabStop = true;
-            linkLabel1.Text = "🔗Git for Windows";
-            linkLabel1.LinkClicked += linkLabel1_LinkClicked;
             // 
             // btnUpdateByBash
             // 
@@ -130,6 +134,7 @@
             // groupBox1
             // 
             groupBox1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox1.Controls.Add(pictHelp);
             groupBox1.Controls.Add(label1);
             groupBox1.Controls.Add(linkWhere);
             groupBox1.Controls.Add(lblNumber);
@@ -142,6 +147,16 @@
             groupBox1.TabIndex = 7;
             groupBox1.TabStop = false;
             groupBox1.Text = "选中项详情";
+            // 
+            // pictHelp
+            // 
+            pictHelp.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            pictHelp.Location = new Point(1225, 25);
+            pictHelp.Name = "pictHelp";
+            pictHelp.Size = new Size(35, 35);
+            pictHelp.TabIndex = 14;
+            pictHelp.TabStop = false;
+            pictHelp.Click += pictHelp_Click;
             // 
             // label1
             // 
@@ -178,7 +193,7 @@
             btnSetAsDefault.Name = "btnSetAsDefault";
             btnSetAsDefault.Size = new Size(112, 33);
             btnSetAsDefault.TabIndex = 3;
-            btnSetAsDefault.Text = "&D 设为默认";
+            btnSetAsDefault.Text = "&D 设为来源";
             btnSetAsDefault.UseVisualStyleBackColor = true;
             btnSetAsDefault.Click += btnSetAsDefault_Click;
             // 
@@ -257,9 +272,9 @@
             lblDescription.AutoSize = true;
             lblDescription.Location = new Point(23, 26);
             lblDescription.Name = "lblDescription";
-            lblDescription.Size = new Size(581, 24);
+            lblDescription.Size = new Size(712, 24);
             lblDescription.TabIndex = 2;
-            lblDescription.Text = "当前系统中的 git.exe 分别来自：环境变量（系统、用户）、程序自带。";
+            lblDescription.Text = "选中最新版的一项，设为来源；随后，用复选框多选需要升级的项；点右下角按钮更新。";
             // 
             // lsvResult
             // 
@@ -325,6 +340,12 @@
             FullPath.Text = "完整路径";
             FullPath.Width = 491;
             // 
+            // imageList
+            // 
+            imageList.ColorDepth = ColorDepth.Depth32Bit;
+            imageList.ImageSize = new Size(16, 16);
+            imageList.TransparentColor = Color.Transparent;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(11F, 24F);
@@ -338,8 +359,10 @@
             Load += MainForm_Load;
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pictGit).EndInit();
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pictHelp).EndInit();
             ResumeLayout(false);
         }
 
@@ -366,10 +389,12 @@
         private LinkLabel linkPath;
         private Button btnUpdateByBash;
         private Label lblNumber;
-        private LinkLabel linkLabel1;
         private LinkLabel lblLatestVersion;
         private ColumnHeader GitBash;
         private Label label1;
         private LinkLabel linkWhere;
+        private ImageList imageList;
+        private PictureBox pictGit;
+        private PictureBox pictHelp;
     }
 }

@@ -2,8 +2,8 @@ using System.Collections;
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using CoffeeScholar.ReplaceAllGit.DarkMode;
+using CoffeeScholar.ReplaceAllGit.Properties;
 using Microsoft.Win32;
 
 namespace CoffeeScholar.ReplaceAllGit;
@@ -23,7 +23,7 @@ public partial class MainForm : Form
     private Dictionary<string, GitSearchResult> _VersionList = new();
     private GitSearchResult? _DefaultSearchResult;
     private GitSearchResult? _SelectedSearchResult;
-    private string[] _WhereIsGit_Paths_ = [];
+    private string[] _WhereIsGitPaths = [];
 
     public MainForm()
     {
@@ -32,23 +32,32 @@ public partial class MainForm : Form
         // 订阅系统首选项更改事件
         SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
 
-        var winDir = Environment.GetEnvironmentVariable("windir");
-        if (winDir != null)
-        {
-            var filePath = winDir + @"\explorer.exe";
-            var icon = Icon.ExtractAssociatedIcon(filePath);
-            var bitmap = icon?.ToBitmap();
-            var scaledImage = bitmap?.GetThumbnailImage(16, 16, null, IntPtr.Zero);
-            linkPath.ImageAlign = ContentAlignment.TopLeft;
-            linkPath.Image = scaledImage;
-            linkWhere.ImageAlign = ContentAlignment.TopLeft;
-            linkWhere.Image = scaledImage;
-        }
+        // 枚举资源文件中的所有图像
+        var imageExplorer = _DarkMode.IsDarkMode ? InvertImageColors(Resources.explorer, new Size(16, 16)) : Resources.explorer;
+        linkPath.ImageAlign = linkWhere.ImageAlign = ContentAlignment.TopLeft;
+        linkPath.Image = linkWhere.Image = imageExplorer;
+
+        pictGit.Image = new Bitmap(Resources.git, new Size(32, 32));
+        pictHelp.Image = _DarkMode.IsDarkMode ? InvertImageColors(Resources.help, new Size(32, 32)) : Resources.help; 
 
         // 初始化
         _SearchHelper = new SearchHelper(["MinGW64", "Git"], "bin\\git.exe", @"\d+\.\d+\.\d+", "--version", 3 * 1024 * 1024);
     }
+    private Bitmap InvertImageColors(Image image, Size? size = null)
+    {
+        var invertedImage = new Bitmap(image);
 
+        for (var y = 0; y < invertedImage.Height; ++y)
+        {
+            for (var x = 0; x < invertedImage.Width; ++x)
+            {
+                var oldColor = invertedImage.GetPixel(x, y);
+                var newColor = Color.FromArgb(oldColor.A, 255 - oldColor.R, 255 - oldColor.G, 255 - oldColor.B);
+                invertedImage.SetPixel(x, y, newColor);
+            }
+        }
+        return size != null ? new Bitmap(invertedImage, size.Value) : invertedImage;
+    }
     private void OnUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
     {
         switch (e.Category)
@@ -73,7 +82,7 @@ public partial class MainForm : Form
     {
         var index = 0;
         // 列出结果
-        var gitPaths = _WhereIsGit_Paths_;
+        var gitPaths = _WhereIsGitPaths;
         foreach (var result in results.OrderByDescending(r => r.Version))
         {
             index++;
@@ -82,12 +91,12 @@ public partial class MainForm : Form
             if (type.Length > 0) type += " | ";
             type += result.IsInUserPath ? "用户" : string.Empty;
             */
-            result.IsInWherePath = _WhereIsGit_Paths_.Contains(result.FullPath);
+            result.IsInWherePath = _WhereIsGitPaths.Contains(result.FullPath);
             var type = result.IsInWherePath ? "在" : "";
             ListViewItem item = new(result.Index = index.ToString("D2"));
             item.SubItems.Add(result.Version);
             item.SubItems.Add(result.IsNeedUpdating ? "需升级" : "");
-            item.SubItems.Add(result.HasGitBash ? "有" : "");
+            item.SubItems.Add(result.HasGitBash ? "Bash" : "");
             item.SubItems.Add(type);
             item.SubItems.Add(SearchHelper.FormatFileSizeForDisplay(result.Size));
             item.SubItems.Add(result.LastAccessTime?.ToString("yyyy-MM-dd HH:mm:ss"));
@@ -224,40 +233,18 @@ public partial class MainForm : Form
         var startInfo = new ProcessStartInfo
         {
             FileName = gitBashPath,
-            // Arguments = arguments,
             UseShellExecute = false,
-            // RedirectStandardOutput = true,
-            // RedirectStandardError = true,  // 重定向错误流
             CreateNoWindow = false
         };
 
         try
         {
             using var process = Process.Start(startInfo);
-            /*
-            if (process != null)
-            {
-                // // 读取输出
-                // var versionOutput = process.StandardOutput.ReadToEnd();
-                // // 读取错误输出
-                // var error = process.StandardError.ReadToEnd();
-
-                //process.WaitForExitAsync();
-
-                /*
-                Debug.WriteLine("Git Bash version:");
-                Debug.WriteLine(versionOutput);
-                Debug.WriteLine("Git Bash error:");
-                Debug.WriteLine(error);
-            #1#
-            }
-        */
         }
         catch (Exception ex)
         {
             Debug.WriteLine("An error occurred while trying to get the Git Bash version: " + ex.Message);
         }
-
         return true;
     }
     #endregion
@@ -280,7 +267,7 @@ public partial class MainForm : Form
         {
             // 获取 git.exe 的路径
             var gitPaths = SearchHelper.GetPathsByCmdWhere(exeName);
-            _WhereIsGit_Paths_ = gitPaths;
+            _WhereIsGitPaths = gitPaths;
 
             // 在 UI 线程中更新 linkWhere.Text
             Invoke(() => linkWhere.Text = @"    " + string.Join(" | ", gitPaths));
@@ -367,16 +354,16 @@ public partial class MainForm : Form
     {
         if (_IsDefaultSet)
         {
-            // 取消默认
+            // 取消来源
             _DefaultSearchResult = null;
 
             _IsDefaultSet = false;
-            btnSetAsDefault.Text = @"&D 设为默认";
+            btnSetAsDefault.Text = @"&D 设为来源";
             lsvResult_SelectedIndexChanged(sender, e);
         }
         else
         {
-            // 设置为默认
+            // 设为来源
             if (lsvResult.SelectedItems.Count != 0)
             {
                 var item = lsvResult.SelectedItems[0];
@@ -384,7 +371,7 @@ public partial class MainForm : Form
                 _DefaultSearchResult = item.Tag as GitSearchResult;
 
                 _IsDefaultSet = true;
-                btnSetAsDefault.Text = @"&C 取消默认";
+                btnSetAsDefault.Text = @"&C 取消来源";
             }
         }
         CheckButtons();
@@ -503,19 +490,6 @@ public partial class MainForm : Form
         Process.Start(psi);
     }
 
-    private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-    {
-        //\u1F310 地球 \u1F517 链接
-        linkLabel1.LinkVisited = false;
-
-        var psi = new ProcessStartInfo
-        {
-            FileName = "https://gitforwindows.org/",
-            UseShellExecute = true
-        };
-        Process.Start(psi);
-    }
-
     private void linkPath_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
     {
         // 打开文件夹
@@ -527,9 +501,30 @@ public partial class MainForm : Form
     private void LinkWhereLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
     {
         // 打开文件夹
-        foreach (var path in _WhereIsGit_Paths_)
+        foreach (var path in _WhereIsGitPaths)
             OpenWithExplorer(path);
         linkPath.LinkVisited = false;
+    }
+
+    private void btnHelp_Click(object sender, EventArgs e)
+    {
+    }
+
+    private void pictGit_Click(object sender, EventArgs e)
+    {
+        //\u1F310 地球 \u1F517 链接
+        var psi = new ProcessStartInfo
+        {
+            FileName = "https://gitforwindows.org/",
+            UseShellExecute = true
+        };
+        Process.Start(psi);
+    }
+
+    private void pictHelp_Click(object sender, EventArgs e)
+    {
+        var about = new AboutForm();
+        about.Show(this);
     }
 }
 

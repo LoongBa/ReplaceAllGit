@@ -8,6 +8,10 @@ Git 安全漏洞问题需升级所有 Git.exe。此工具用于查找本地硬�
 
 This tool is used to find all Git on the local hard disk and obtain version information, and then update in batches (copy, create soft links).
 
+> 本项目是带孩子学习 Windows GUI 编程的练手项目，有不完善请多包涵。
+> 
+> This project is a practice project for teaching children Windows GUI programming, please forgive any imperfections.
+
 # 起因：Git 远程代码执行漏洞 CVE-2024-32002
 
 # May 2024 CVE Security Bulletin: CVE-2024-32002
@@ -24,29 +28,7 @@ This tool is used to find all Git on the local hard disk and obtain version info
 > > 
 > > Git is vulnerable to case confusion on case-insensitive filesystems that support symbolic links when performing recursive clones. Unauthenticated attackers can exploit this vulnerability to execute cloned code during the victim's clone operation, leading to remote code execution.
 > 
-> + **CVE 编号 Number**
-> 
-> CVE-2024-32002
-> 
-> + **影响版本 Affected Version**
->   
->   + Git 2.45.0
->   
->   + Git 2.44.0
->   
->   + Git 2.43.* < 2.43.4
->   
->   + Git 2.42.* < 2.42.2
->   
->   + Git 2.41.0
->   
->   + Git 2.40.* < 2.40.2
->   
->   + Git < 2.39.4
->     
->     只影响 Windows 和 Mac 系统。
->     
->     Only affects Windows and Mac systems.
+> + **CVE 编号 Number** CVE-2024-32002
 > 
 > **漏洞详情 Vulnerability Details**
 > 
@@ -56,7 +38,7 @@ This tool is used to find all Git on the local hard disk and obtain version info
 
 # ——抓紧升级修复漏洞
 
-**Git 2.45.1 版本修复了相关漏洞，抓紧升级即可。**
+**Git 2.45.1 之后版本修复了相关漏洞，抓紧升级即可。**
 
 **The related vulnerability has been fixed in Git version 2.45.1, please upgrade promptly.**
 
@@ -100,8 +82,6 @@ Over the weekend, I wrote this small tool with my kid. I helped with some of the
   
   —— Apply Dark Mode to all Controls in a Form [WinForms]
 
-# 
-
 ![](./images_README/2024-06-01-23-36-39-image.png)
 
 # 运行环境 Running Environment
@@ -129,25 +109,27 @@ Over the weekend, I wrote this small tool with my kid. I helped with some of the
   
   - [x] 自动获得下载地址、打开浏览器：可以采用 Huawei 官方镜像站下载；
     
-    ——我主要用 `scoop` 所以这个方法意义不大。
+    ——我主要用 `scoop` 所以这个方法算额外的。
   
-  - [x] [实验] 从 `Git Bash` 升级——成功，但实际上是自动下载安装包，然后静默安装。同上。
+  - [x] ~~[实验] 从 `Git Bash` 升级——成功，但实际上是自动下载安装包，然后静默安装。同上。~~
+  
+  - [x] 关于对话框
   * [ ] 没有安装 `Everything` 时，采用文件搜索的方式；
   - [ ] 加入多语言支持，英语；
-- [ ] V2.0 提供恢复功能
+
+* ~~V2.0 提供恢复功能~~
   
-  * 备份指定版本
+  * ~~备份指定版本~~
   
-  * 用最新版本覆盖指定版本
+  * ~~用最新版本覆盖指定版本~~
   
-  * 恢复备份
+  * ~~恢复备份~~
+
 * V2.x 提供软链接映射功能
   
   * 备份指定版本
   
   * 用软链接映射到最新版本
-  
-  * 恢复备份
 
 * V3.x 采用 WPF、MAUI，学习、练手（实在不习惯用 Python 做 GUI，后续考虑试试看 PyQt/Qt 和 Rust/Go）
 
@@ -178,22 +160,20 @@ Over the weekend, I wrote this small tool with my kid. I helped with some of the
   - [ ] When Everything is not installed, use file search method;
   
   - [ ] Add multilingual support, English;   
+
+- ~~V2.0 Provides recovery function~~
   
-  V2.0 Provides recovery function
-
-- Backup specified version
-
-- Overwrite specified version with the latest version
-
-- Restore backup
+  - ~~Backup specified version~~
+  
+  - ~~Overwrite specified version with the latest version~~
+  
+  - ~~Restore backup~~
 
 - V2.x Provides soft link mapping function
   
   - Backup specified version
   
   - Map to the latest version with soft links
-  
-  - Restore backup
 
 - V3.x Uses WPF, MAUI, learning, practice (really not used to using Python to do GUI, consider trying PyQt/Qt and Rust/Go later)
 
