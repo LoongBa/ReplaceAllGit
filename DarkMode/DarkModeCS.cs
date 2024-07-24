@@ -1,6 +1,7 @@
 ﻿using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
+
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
 // ReSharper disable CommentTypo
@@ -9,7 +10,7 @@ using Microsoft.Win32;
 
 
 
-namespace CoffeeScholar.ReplaceAllGit.DarkMode
+namespace LoongBa.ReplaceAllGit.DarkMode
 {
     /// <summary>This tries to automatically apply Windows Dark Mode (if enabled) to a Form.
     /// <para>Author: BlueMystic (bluemystic.play@gmail.com)  2024</para></summary>

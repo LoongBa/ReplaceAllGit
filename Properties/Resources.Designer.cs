@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CoffeeScholar.ReplaceAllGit.Properties {
+namespace LoongBa.ReplaceAllGit.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace CoffeeScholar.ReplaceAllGit.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CoffeeScholar.ReplaceAllGit.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("LoongBa.ReplaceAllGit.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

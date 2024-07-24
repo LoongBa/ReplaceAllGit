@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace CoffeeScholar.ReplaceAllGit;
+namespace LoongBa.ReplaceAllGit;
 
 public class AnsiStringHelper
 {

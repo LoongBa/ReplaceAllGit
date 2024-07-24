@@ -1,4 +1,4 @@
-namespace CoffeeScholar.ReplaceAllGit;
+namespace LoongBa.ReplaceAllGit;
 
 public class MyListView : ListView
 {

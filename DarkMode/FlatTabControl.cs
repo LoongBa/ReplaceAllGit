@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace CoffeeScholar.ReplaceAllGit.DarkMode
+namespace LoongBa.ReplaceAllGit.DarkMode
 {
     public class FlatTabControl : TabControl
     {

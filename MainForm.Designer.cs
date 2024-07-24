@@ -1,4 +1,4 @@
-﻿namespace CoffeeScholar.ReplaceAllGit
+﻿namespace LoongBa.ReplaceAllGit
 {
     partial class MainForm
     {

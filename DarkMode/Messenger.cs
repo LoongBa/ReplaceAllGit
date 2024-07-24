@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
-using static CoffeeScholar.ReplaceAllGit.DarkMode.KeyValue;
+using static LoongBa.ReplaceAllGit.DarkMode.KeyValue;
 
-namespace CoffeeScholar.ReplaceAllGit.DarkMode
+namespace LoongBa.ReplaceAllGit.DarkMode
 {
     /* Author: BlueMystic (bluemystic.play@gmail.com)  2024 */
     public static class Messenger

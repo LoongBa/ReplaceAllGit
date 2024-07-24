@@ -2,11 +2,11 @@ using System.Collections;
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
-using CoffeeScholar.ReplaceAllGit.DarkMode;
-using CoffeeScholar.ReplaceAllGit.Properties;
+using LoongBa.ReplaceAllGit.DarkMode;
+using LoongBa.ReplaceAllGit.Properties;
 using Microsoft.Win32;
 
-namespace CoffeeScholar.ReplaceAllGit;
+namespace LoongBa.ReplaceAllGit;
 
 public partial class MainForm : Form
 {

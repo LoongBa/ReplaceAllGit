@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.InteropServices;
 
-namespace CoffeeScholar.ReplaceAllGit.DarkMode
+namespace LoongBa.ReplaceAllGit.DarkMode
 {
     // *** CREDITS:  https://github.com/r-aghaei/FlatComboExample/tree/master
 

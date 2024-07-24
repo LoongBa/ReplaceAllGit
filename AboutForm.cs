@@ -1,8 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Text;
-using System.Windows.Forms;
 
-namespace CoffeeScholar.ReplaceAllGit
+namespace LoongBa.ReplaceAllGit
 {
     public partial class AboutForm : Form
     {

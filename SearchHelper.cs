@@ -4,7 +4,7 @@ using EveryThingSharpCore.Enums;
 using EveryThingSharpCore.Fluent;
 using Microsoft.Win32;
 
-namespace CoffeeScholar.ReplaceAllGit;
+namespace LoongBa.ReplaceAllGit;
 
 public class SearchHelper(
     string[] mainFolderNames,   //["MinGW64", "Git"]
