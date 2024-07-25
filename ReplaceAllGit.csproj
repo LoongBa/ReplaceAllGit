@@ -2,22 +2,23 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>LoongBa.ReplaceAllGit</RootNamespace>
     <PlatformTarget>x64</PlatformTarget>
-    <Authors>LoongBa</Authors>
+    <Platforms>x64</Platforms>
     <PackageProjectUrl>https://github.com/LoongBa/ReplaceAllGit</PackageProjectUrl>
     <RepositoryUrl>https://github.com/LoongBa/ReplaceAllGit</RepositoryUrl>
-    <Platforms>AnyCPU;x64</Platforms>
     <Version>1.3</Version>
+    <Authors>LoongBa</Authors>
+    <RootNamespace>LoongBa.ReplaceAllGit</RootNamespace>
+    <CustomResourceTypesSupport>true</CustomResourceTypesSupport>
     <ApplicationIcon>icons\git.ico</ApplicationIcon>
-    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <_SuppressWinFormsTrimError>true</_SuppressWinFormsTrimError>
     <!--
     <PublishAot>true</PublishAot>
-    <_SuppressWinFormsTrimError>true</_SuppressWinFormsTrimError>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
     -->
   </PropertyGroup>
 
